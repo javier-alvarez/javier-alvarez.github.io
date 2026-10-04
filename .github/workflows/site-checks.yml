@@ -45,10 +45,13 @@ jobs:
           # Many sites (Scholar, X, JAMA, Science) answer bots with 403 or 429:
           # the page exists, the checker is refused. Accept those, so only dead
           # links (404, 5xx, DNS) fail. LinkedIn answers bots with a
-          # non-standard 999, so it is skipped.
+          # non-standard 999, so it is skipped. The van der Schaar Lab site
+          # chains to Let's Encrypt's newer "Root YR", which lychee's TLS stack
+          # intermittently rejects; it verifies fine with curl and OpenSSL.
           args: >-
             --no-progress --max-retries 2
             --accept '100..=103,200..=299,403,429'
             --exclude 'linkedin\.com'
+            --exclude 'vanderschaar-lab\.com'
             index.html llms.txt
           fail: true
