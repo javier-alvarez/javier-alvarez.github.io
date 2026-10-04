@@ -1,0 +1,5 @@
+# Everyone may read this site, including search engines and AI assistants.
+User-agent: *
+Allow: /
+
+Sitemap: https://javier-alvarez.github.io/sitemap.xml

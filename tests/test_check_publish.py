@@ -101,6 +101,14 @@ class PublishGuardTest(unittest.TestCase):
         sha = self.repo.commit({"cv.pdf": b"%PDF-1.7 fake"})
         self.assertBlocked(self.repo.problems(sha), "not a file type this site needs")
 
+    def test_crawler_files_are_allowed(self):
+        sha = self.repo.commit({
+            "robots.txt": "User-agent: *\nAllow: /\n",
+            "sitemap.xml": "<?xml version=\"1.0\"?><urlset></urlset>\n",
+            "llms.txt": "# Name\n",
+        })
+        self.assertEqual(self.repo.problems(sha), [])
+
     def test_secret_is_blocked_without_echoing_it(self):
         token = "ghp" + "_" + "a1B2" * 9
         sha = self.repo.commit({"assets/site.js": f"const key = '{token}';\n"})
