@@ -47,5 +47,6 @@ jobs:
             --no-progress --max-retries 2
             --exclude 'linkedin\.com' --exclude '(^|\.)x\.com'
             --exclude 'jamanetwork\.com' --exclude 'science\.org'
+            --exclude 'scholar\.google\.com'
             index.html
           fail: true
