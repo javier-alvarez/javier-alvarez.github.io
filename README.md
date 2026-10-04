@@ -18,6 +18,22 @@ python3 -m http.server 8000
 
 Then open http://localhost:8000.
 
+## Publishing safely
+
+This repo is public, history included, so a pre-push guard checks every
+commit before it leaves your machine: terms from a private denylist,
+secrets, commit emails, file types and image metadata. Enable it once per
+clone, pointing at the denylist (kept outside this repo):
+
+```bash
+git config core.hooksPath .githooks
+git config siteguard.denylist /path/to/denylist.txt
+```
+
+GitHub Actions (`.github/workflows/site-checks.yml`) then runs checks that
+are safe in public: the guard's tests, local resources and contrast
+(`scripts/check_site.py`), HTML validation, accessibility and links.
+
 ## Licence
 
 The code is MIT-licensed. The text and images are © Javier Alvarez-Valle, all
