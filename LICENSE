@@ -1,6 +1,20 @@
+Content: text, photographs and images
+
+Copyright (c) 2026 Javier Alvarez-Valle. All rights reserved.
+
+The written content of this website and its images, including
+assets/photo.jpg and assets/og.jpg, may not be reproduced without permission.
+
+Fonts
+
+The files in assets/fonts/ are licensed under the SIL Open Font License 1.1;
+see assets/fonts/OFL-IBM-Plex.txt and assets/fonts/OFL-Newsreader.txt.
+
+Code: HTML, CSS and JavaScript
+
 MIT License
 
-Copyright (c) 2026 Javier
+Copyright (c) 2026 Javier Alvarez-Valle
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

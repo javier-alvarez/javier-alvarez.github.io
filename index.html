@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Javier Alvarez-Valle — Healthcare AI · Foundation Models · AI for Drug Discovery</title>
+  <meta name="description" content="Javier Alvarez-Valle, Director of AI at Quotient Therapeutics. Multimodal foundation models for radiology, radiotherapy AI used in the NHS, and AI for drug discovery.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://javier-alvarez.github.io/">
+  <meta property="og:title" content="Javier Alvarez-Valle — AI for biology and medicine">
+  <meta property="og:description" content="Director of AI at Quotient Therapeutics. Formerly Senior Director, Microsoft Research Health Futures.">
+  <meta property="og:image" content="https://javier-alvarez.github.io/assets/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Javier Alvarez-Valle, Director of AI at Quotient Therapeutics: I build AI that sees and reasons about biology.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:creator" content="@alvarezvalle">
+  <link rel="canonical" href="https://javier-alvarez.github.io/">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Javier Alvarez-Valle",
+      "url": "https://javier-alvarez.github.io/",
+      "image": "https://javier-alvarez.github.io/assets/photo.jpg",
+      "jobTitle": "Director of AI",
+      "worksFor": { "@type": "Organization", "name": "Quotient Therapeutics", "url": "https://quotient-tx.com" },
+      "alumniOf": { "@type": "CollegeOrUniversity", "name": "Universidad de Oviedo" },
+      "sameAs": [
+        "https://www.linkedin.com/in/javieralvarezvalle/",
+        "https://scholar.google.com/citations?user=ojoRDc4AAAAJ",
+        "https://github.com/javier-alvarez",
+        "https://x.com/alvarezvalle"
+      ]
+    }
+  </script>
+  <link rel="preload" href="assets/fonts/newsreader-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script>
+    // Pick the theme before first paint so there is no flash.
+    (function () {
+      var theme = null;
+      try { theme = localStorage.getItem('theme'); } catch (e) {}
+      if (theme !== 'light' && theme !== 'dark') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.dataset.theme = theme;
+    })();
+  </script>
+  <script src="assets/site.js" defer></script>
+  <script src="assets/mosaic.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="wrap topbar__inner">
+      <a class="brand" href="#top"><span class="brand__cell" aria-hidden="true"></span>Javier Alvarez-Valle</a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#about">About</a>
+        <a href="#radiology">Work</a>
+        <a href="#writing">Writing</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" aria-label="Switch colour theme">
+        <span class="theme-toggle__icon" aria-hidden="true"></span>
+        <span class="theme-toggle__label">brightfield</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero wrap" id="top">
+      <div class="hero__text">
+        <p class="kicker"><span class="kicker__dot" aria-hidden="true"></span>Foundation models · Clinical AI · Somatic genomics</p>
+        <h1 class="hero__name">Javier <span class="nowrap">Alvarez-Valle</span></h1>
+        <p class="hero__bio">I build AI that <em>sees</em> and <em>reasons</em> about biology — from radiology and radiotherapy models used in hospitals to AI for drug discovery.</p>
+        <p class="hero__role">Director of AI, <a href="https://quotient-tx.com">Quotient Therapeutics</a> · Cambridge, UK</p>
+        <ul class="links">
+          <li><a href="#about">About me</a></li>
+          <li><a href="https://scholar.google.com/citations?user=ojoRDc4AAAAJ">Scholar ↗</a></li>
+          <li><a href="https://www.linkedin.com/in/javieralvarezvalle/">LinkedIn ↗</a></li>
+          <li><a href="https://github.com/javier-alvarez">GitHub ↗</a></li>
+          <li><a href="https://x.com/alvarezvalle">X ↗</a></li>
+        </ul>
+      </div>
+
+      <figure class="hero__figure">
+        <div class="slide">
+          <canvas id="mosaic" role="img" aria-label="Animated simulation of somatic evolution in a tissue: driver mutations expand, protective mutations survive injury, and passenger mutations hitch a ride."></canvas>
+        </div>
+        <figcaption class="caption">
+          <span class="caption__stat" id="mosaic-stat" aria-live="off">Generation 0</span>
+          <span class="legend">
+            <span class="legend__item"><span class="swatch swatch--normal" aria-hidden="true"></span><b>normal</b> turns over</span>
+            <span class="legend__item"><span class="swatch swatch--driver" aria-hidden="true"></span><b>driver</b> divides faster</span>
+            <span class="legend__item"><span class="swatch swatch--protective" aria-hidden="true"></span><b>protective</b> survives injury</span>
+            <span class="legend__item"><span class="swatch swatch--passenger" aria-hidden="true"></span><b>passenger</b> hitches a ride</span>
+          </span>
+          <span>Somatic evolution, simulated: cells die and neighbours divide to replace them, every cell carries its own genome, and selection decides which clones take over.</span>
+          <span class="caption__controls">
+            <button type="button" class="textbtn" id="mosaic-replay">↺ replay</button>
+            <span class="caption__hint">tap the tissue to injure it</span>
+          </span>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="section wrap" id="about">
+      <header class="section__head">
+        <span class="section__num">00</span>
+        <h2>From hospital images to the genome</h2>
+      </header>
+      <div class="about">
+        <div class="about__text">
+          <p>I take AI out of the lab and into the places where it has to work — radiotherapy, radiology and, now, drug discovery.</p>
+          <p>I studied computer science at the Universidad de Oviedo and wrote my master’s thesis at the University of Cambridge. After engineering roles at Telefónica I+D, Redgate, Citrix and Featurespace, I joined Microsoft in 2012 and built Skype’s real-time telemetry pipeline, later scaled across Xbox, Bing and Office.</p>
+          <p>For 10 years at Microsoft Research I worked on AI for medicine. I led Project InnerEye — radiotherapy AI that cut contouring time by 36–67% in NHS use, open-sourced and adopted by 30+ organisations — and AI engineering through FDA 510(k) clearance. As Senior Director in Health Futures I led a 13-person team across the UK, US and India building multimodal foundation models, collaborating with Mayo Clinic to deploy draft reporting for chest X-rays, and with Novartis and Cyted.</p>
+          <p>In 2026, as an advisor, I worked on autonomous chest X-ray reporting and built the knowledge-base layer of the open-source Firefly Agentic framework. Today I am Director of AI at Quotient Therapeutics, a Flagship Pioneering company using somatic genomics to discover medicines.</p>
+        </div>
+        <aside class="about__aside">
+          <img class="portrait" src="assets/photo.jpg" alt="Portrait of Javier Alvarez-Valle" width="399" height="500" loading="lazy">
+          <h3 class="minihead">The path so far</h3>
+          <ol class="timeline">
+            <li><span class="timeline__when">2001–2007</span><span class="timeline__what"><strong>Computer Science</strong> · Universidad de Oviedo; MSc thesis at the University of Cambridge</span></li>
+            <li><span class="timeline__when">2007–2012</span><span class="timeline__what"><strong>Telefónica I+D, Redgate, Citrix, Featurespace</strong> · networking, developer tools, fraud ML</span></li>
+            <li><span class="timeline__when">2012–2015</span><span class="timeline__what"><strong>Microsoft</strong> · Skype real-time telemetry, scaled to Xbox, Bing and Office</span></li>
+            <li><span class="timeline__when">2015–2022</span><span class="timeline__what"><strong>Microsoft Research</strong> · Project InnerEye, FDA 510(k)</span></li>
+            <li><span class="timeline__when">2022–2026</span><span class="timeline__what"><strong>Microsoft Research Health Futures</strong> · Senior Director, Project MAIRA</span></li>
+            <li><span class="timeline__when">2026</span><span class="timeline__what"><strong>GradientWise</strong> · autonomous chest X-ray reporting, Firefly Agentic</span></li>
+            <li><span class="timeline__when">Now</span><span class="timeline__what"><strong>Quotient Therapeutics</strong> · Director of AI</span></li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section wrap" id="radiology">
+      <header class="section__head">
+        <span class="section__num">01</span>
+        <h2>Foundation models that read medical images</h2>
+      </header>
+      <p class="section__intro">My team built image encoders and report-generation models for chest X-rays — Project MAIRA — and collaborated with Mayo Clinic to deploy draft reporting.</p>
+      <div class="cards">
+        <article class="card">
+          <p class="card__meta"><span>arXiv</span><span>2025</span></p>
+          <h3>Closing the Performance Gap Between AI and Radiologists in Chest X-Ray Reporting</h3>
+          <p>MAIRA-X: longitudinal reporting, including lines and tubes, at near parity with radiologists on critical errors and sentence acceptability.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2511.21735">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>arXiv</span><span>2024</span></p>
+          <h3>MAIRA-2: Grounded Radiology Report Generation</h3>
+          <p>Reports that localise every finding on the image, with RadFact to check each sentence.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2406.04449">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Nature Machine Intelligence</span><span>2025</span></p>
+          <h3>Exploring scalable medical image encoders beyond text supervision</h3>
+          <p>RAD-DINO: trained on images alone, it matches or beats language-supervised encoders and scales with data diversity.</p>
+          <a class="card__link" href="https://www.nature.com/articles/s42256-024-00965-w">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>ECCV</span><span>2022</span></p>
+          <h3>Making the Most of Text Semantics to Improve Biomedical Vision-Language Processing</h3>
+          <p>BioViL: better modelling of report text substantially improves vision-language learning. My most-cited paper.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2204.09817">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>CVPR</span><span>2023</span></p>
+          <h3>Learning to Exploit Temporal Structure for Biomedical Vision-Language Processing</h3>
+          <p>BioViL-T: learns how disease changes between studies from prior images and reports.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2301.04558">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>EMNLP</span><span>2023</span></p>
+          <h3>Exploring the Boundaries of GPT-4 in Radiology</h3>
+          <p>GPT-4 matches or beats radiology-specific models on text-based tasks — and prompting matters.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2310.14573">paper ↗</a>
+        </article>
+      </div>
+      <p class="more"><a href="https://scholar.google.com/citations?user=ojoRDc4AAAAJ">More on Google Scholar ↗</a></p>
+    </section>
+
+    <section class="section wrap" id="radiotherapy">
+      <header class="section__head">
+        <span class="section__num">02</span>
+        <h2>AI in the radiotherapy planning room</h2>
+      </header>
+      <p class="section__intro">Clinicians spend an hour or more outlining organs on a CT scan before radiotherapy. Project InnerEye automates the routine part — and we took it into NHS use.</p>
+      <div class="cards">
+        <article class="card">
+          <p class="card__meta"><span>JAMA Network Open</span><span>2020</span></p>
+          <h3>Evaluation of Deep Learning to Augment Image-Guided Radiotherapy for Head and Neck and Prostate Cancers</h3>
+          <p>Up to 13× faster segmentation with machine-learning assistance, within expert variability.</p>
+          <a class="card__link" href="https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2773292">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Clinical Oncology</span><span>2025</span></p>
+          <h3>OSAIRIS: Lessons Learned From the Hospital-Based Implementation and Evaluation of an Open-Source Deep-Learning Model for Radiotherapy Image Segmentation</h3>
+          <p>InnerEye in hospital use: contouring 36% faster for prostate and 67% faster for head and neck.</p>
+          <a class="card__link" href="https://doi.org/10.1016/j.clon.2024.10.032">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Open source</span><span>2020</span></p>
+          <h3>Project InnerEye Deep Learning Toolkit</h3>
+          <p>Open-sourced so hospitals and researchers can build their own imaging models; adopted by 30+ organisations.</p>
+          <a class="card__link" href="https://aka.ms/innereye">project ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="pathology">
+      <header class="section__head">
+        <span class="section__num">03</span>
+        <h2>Pathology, screening and biomarkers</h2>
+      </header>
+      <p class="section__intro">The same ideas carry over to pathology, screening and biomarker discovery.</p>
+      <div class="cards">
+        <article class="card">
+          <p class="card__meta"><span>Nature Communications</span><span>2024</span></p>
+          <h3>Enabling large-scale screening of Barrett’s esophagus using weakly supervised deep learning in histopathology</h3>
+          <p>With Cyted: filtering clear negatives in oesophageal screening, cutting pathologist reviews by about half.</p>
+          <a class="card__link" href="https://www.nature.com/articles/s41467-024-46174-2">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>arXiv</span><span>2025</span></p>
+          <h3>NOVA: An Agentic Framework for Automated Histopathology Analysis and Discovery</h3>
+          <p>An agent that turns scientific questions into executable histopathology analyses.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2511.11324">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Microsoft Research</span><span>2022–2025</span></p>
+          <h3>Multimodal biomarker discovery</h3>
+          <p>Foundation models and AI agents across imaging, text and clinical data, including a collaboration with Novartis.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="agents">
+      <header class="section__head">
+        <span class="section__num">04</span>
+        <h2>AI that does the science</h2>
+      </header>
+      <p class="section__intro">Agents that plan analyses, query what an organisation knows, and hand a case back to a human when unsure.</p>
+      <div class="cards">
+        <article class="card">
+          <p class="card__meta"><span>Advisory</span><span>2026</span></p>
+          <h3>Autonomous normal chest X-ray reporting</h3>
+          <p>A safety layer that reports a study as normal only when confident, and otherwise defers to a radiologist.</p>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Open source</span><span>2026</span></p>
+          <h3>Firefly Agentic: the knowledge-base layer</h3>
+          <p>Hybrid-search ingestion, schema-aware parsing, an agentic SQL retriever and an MCP server on Azure — 20+ merged PRs.</p>
+          <a class="card__link" href="https://github.com/fireflyframework/fireflyframework-agentic/pulls?q=is%3Apr+author%3Ajavier-alvarez+is%3Amerged">pull requests ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>arXiv</span><span>2025</span></p>
+          <h3>The Illusion of Readiness: Stress Testing Large Frontier Models on Multimodal Medical Benchmarks</h3>
+          <p>Frontier models can ace medical benchmarks without robust multimodal reasoning.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2509.18234">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Microsoft</span><span>2025–2026</span></p>
+          <h3>Reinforcement learning for LLMs</h3>
+          <p>Post-training frontier LLMs with reinforcement learning to improve instruction following, helpfulness and robustness.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="engineering">
+      <header class="section__head">
+        <span class="section__num">05</span>
+        <h2>Engineering that holds up in production</h2>
+      </header>
+      <p class="section__intro">Before medicine I built large systems: a model only matters if it runs reliably where people use it.</p>
+      <div class="cards">
+        <article class="card">
+          <p class="card__meta"><span>Microsoft</span><span>2012–2015</span></p>
+          <h3>Skype real-time telemetry</h3>
+          <p>Millions of events per second, scaled across Xbox, Bing and Office as Microsoft’s first Azure-based telemetry platform.</p>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Microsoft Research</span><span>2015</span></p>
+          <h3>What-Dog.net</h3>
+          <p>A deep-learning dog-breed recogniser that reached 3 million users in three weeks.</p>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>Nature Communications</span><span>2022</span></p>
+          <h3>Active label cleaning for improved dataset quality under resource constraints</h3>
+          <p>Prioritises which labels experts should re-check, correcting up to 4× more effectively than random selection.</p>
+          <a class="card__link" href="https://www.nature.com/articles/s41467-022-28818-3">paper ↗</a>
+        </article>
+        <article class="card">
+          <p class="card__meta"><span>arXiv</span><span>2020</span></p>
+          <h3>Secure Medical Image Analysis with CrypTFlow</h3>
+          <p>Secure multi-party inference for medical imaging models, compiled automatically from TensorFlow.</p>
+          <a class="card__link" href="https://arxiv.org/abs/2012.05064">paper ↗</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section wrap" id="writing">
+      <header class="section__head">
+        <span class="section__num">06</span>
+        <h2>Writing</h2>
+      </header>
+      <p class="section__intro">On leading teams, plus Microsoft Research blog posts written with colleagues, and interviews.</p>
+      <ul class="entries">
+        <li>
+          <span class="entries__when">Feb 2026</span>
+          <span class="entries__kind">MentorCruise</span>
+          <span class="entries__what"><a href="https://mentorcruise.com/blog/how-i-like-to-run-teams-f7e9f/">How I like to run teams ↗</a><span class="entries__note">The consultative model</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Jan 2026</span>
+          <span class="entries__kind">Microsoft News · ES</span>
+          <span class="entries__what"><a href="https://news.microsoft.com/source/emea/features/impulsando-una-ia-transparente-en-radiologia-por-que-localizar-y-describir-los-hallazgos-es-importante/?lang=es">Impulsando una IA transparente en radiología: por qué localizar y describir los hallazgos es importante ↗</a><span class="entries__note">Interview on MAIRA-2 and PadChest-GR (in Spanish)</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Jun 2025</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/padchest-gr-a-bilingual-grounded-radiology-reporting-benchmark-for-chest-x-rays/">PadChest-GR: A bilingual grounded radiology reporting benchmark for chest X-rays ↗</a><span class="entries__note">with Daniel Coelho de Castro</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Sep 2024</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/stress-testing-biomedical-vision-models-with-radedit-a-synthetic-data-approach-for-robust-model-deployment/">Stress-testing biomedical vision models with RadEdit: A synthetic data approach for robust model deployment ↗</a><span class="entries__note">with Max Ilse and Daniel Coelho de Castro</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Mar 2024</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/scaling-early-detection-of-esophageal-cancer-with-ai/">Scaling early detection of esophageal cancer with AI ↗</a><span class="entries__note">with Anton Schwaighofer</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Nov 2023</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/gpt-4s-potential-in-shaping-the-future-of-radiology/">GPT-4’s potential in shaping the future of radiology ↗</a><span class="entries__note">with Matthew Lungren</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Jun 2023</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/accounting-for-past-imaging-studies-enhancing-radiology-ai-and-reporting/">Accounting for past imaging studies: Enhancing radiology AI and reporting ↗</a><span class="entries__note">with Ozan Oktay and Matthew Lungren</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Nov 2020</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/project-innereye-evaluation-shows-how-ai-can-augment-and-accelerate-clinicians-ability-to-perform-radiotherapy-planning-13-times-faster/">Project InnerEye evaluation shows how AI can augment and accelerate clinicians’ ability to perform radiotherapy planning 13 times faster ↗</a><span class="entries__note">with Ozan Oktay, Anton Schwaighofer and colleagues</span></span>
+        </li>
+        <li>
+          <span class="entries__when">Sep 2020</span>
+          <span class="entries__kind">MSR Blog</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/blog/project-innereye-open-source-deep-learning-toolkit-democratizing-medical-imaging-ai/">Project InnerEye open-source deep learning toolkit: Democratizing medical imaging AI ↗</a><span class="entries__note">with Gregory J. Moore</span></span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section wrap" id="recognition">
+      <header class="section__head">
+        <span class="section__num">07</span>
+        <h2>Recognition, talks and media</h2>
+      </header>
+      <ul class="entries">
+        <li>
+          <span class="entries__when">2025</span>
+          <span class="entries__kind">Talk</span>
+          <span class="entries__what"><a href="https://www.vanderschaar-lab.com/summer-school-schedule/">Medical Imaging AI – From raw signal to precision care ↗</a><span class="entries__note">Invited talk, Cambridge Centre for AI in Medicine summer school, led by Prof. Mihaela van der Schaar</span></span>
+        </li>
+        <li>
+          <span class="entries__when">2023</span>
+          <span class="entries__kind">Podcast</span>
+          <span class="entries__what"><a href="https://www.microsoft.com/en-us/research/podcast/collaborators-project-innereye-with-javier-alvarez-and-raj-jena/">Collaborators: Project InnerEye with Javier Alvarez and Raj Jena ↗</a><span class="entries__note">Microsoft Research podcast</span></span>
+        </li>
+        <li>
+          <span class="entries__when">2023</span>
+          <span class="entries__kind">Press</span>
+          <span class="entries__what"><a href="https://www.bbc.co.uk/news/health-65988768">BBC News feature on Project InnerEye ↗</a></span>
+        </li>
+        <li>
+          <span class="entries__when">2021</span>
+          <span class="entries__kind">Award</span>
+          <span class="entries__what"><a href="https://www.cuh.nhs.uk/news/cambridge-award-winners-in-ai-innovation/">NHS AI Lab — AI in Health and Care Award ↗</a><span class="entries__note">Project InnerEye, with Addenbrooke’s Hospital</span></span>
+        </li>
+        <li>
+          <span class="entries__when">2020</span>
+          <span class="entries__kind">Press</span>
+          <span class="entries__what"><a href="https://htn.co.uk/2020/09/24/microsoft-research-project-innereye-releases-its-ai-software-as-open-source/">HTN Health Tech News: InnerEye released as open source ↗</a></span>
+        </li>
+        <li>
+          <span class="entries__when">—</span>
+          <span class="entries__kind">Patents</span>
+          <span class="entries__what">Inventor on AI/ML patents assigned to Microsoft in medical imaging and biomedical AI</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section wrap contact" id="contact">
+      <h2>Let’s talk about AI for biology and medicine.</h2>
+      <p class="section__intro">For roles, collaborations or speaking, email me or reach out on LinkedIn. I also mentor on MentorCruise.</p>
+      <div class="contact__actions">
+        <a class="btn btn--solid" id="email-link" href="https://www.linkedin.com/in/javieralvarezvalle/" data-user="javierav" data-domain="outlook.com">Email me</a>
+        <a class="btn btn--ghost" href="https://www.linkedin.com/in/javieralvarezvalle/">LinkedIn ↗</a>
+        <a class="btn btn--ghost" href="https://mentorcruise.com/mentor/javieralvarezvalle/">MentorCruise ↗</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <span>© <span id="year">2026</span> Javier Alvarez-Valle</span>
+      <span>The hero is a toy model of somatic evolution, not real data, inspired by <a href="https://www.science.org/doi/10.1126/science.aau3879">Martincorena et al., Science 2018</a> and <a href="https://www.nature.com/articles/s41586-021-03974-6">Ng et al., Nature 2021</a>.</span>
+    </div>
+  </footer>
+</body>
+</html>
