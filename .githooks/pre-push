@@ -1,0 +1,4 @@
+#!/bin/sh
+# Refuse to push anything confidential to this public repo.
+# Enable once per clone:  git config core.hooksPath .githooks
+exec python3 "$(git rev-parse --show-toplevel)/scripts/check_publish.py" "$@"
