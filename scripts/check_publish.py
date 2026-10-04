@@ -34,7 +34,8 @@ from pathlib import Path
 ZERO_SHA = "0" * 40
 DEFAULT_DENYLIST = Path.home() / ".config" / "site-guard" / "denylist.txt"
 
-NOREPLY_EMAIL = re.compile(r"^(\d+\+)?[A-Za-z0-9-]+@users\.noreply\.github\.com$")
+# Personal no-reply addresses, plus the address GitHub commits web merges with.
+NOREPLY_EMAIL = re.compile(r"^((\d+\+)?[A-Za-z0-9-]+@users\.noreply\.github\.com|noreply@github\.com)$")
 
 ALLOWED_SUFFIXES = {
     ".html", ".css", ".js", ".json", ".svg", ".jpg", ".jpeg", ".png", ".webp",
@@ -156,8 +157,42 @@ def check_commit(repo, sha, denylist):
     return problems
 
 
-def commits_from_pre_push(repo, remote, lines):
-    """Commits a push would publish, from the refs git passes on stdin."""
+def published_commits(repo, destination):
+    """Commit ids the destination already has, asked of the destination itself.
+
+    Local remote-tracking refs are not trusted: they can be stale, or belong
+    to a different repository than the one being pushed to. Returns None if
+    the destination cannot be listed.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "-C", str(repo), "ls-remote", destination],
+            capture_output=True, text=True, timeout=60,
+        )
+    except subprocess.TimeoutExpired:
+        return None
+    if out.returncode != 0:
+        return None
+    return {line.split()[0] for line in out.stdout.splitlines() if line.strip()}
+
+
+def exists_locally(repo, sha):
+    return subprocess.run(
+        ["git", "-C", str(repo), "cat-file", "-e", f"{sha}^{{commit}}"], capture_output=True,
+    ).returncode == 0
+
+
+def commits_from_pre_push(repo, destination, lines):
+    """Commits a push would publish, from the refs git passes on stdin.
+
+    Skips commits the destination already has (they are public already). If
+    the destination cannot be listed, only the target branch's current tip is
+    skipped, so more is checked rather than less.
+    """
+    published = published_commits(repo, destination) if destination else None
+    if published is None:
+        print("publish guard: could not list the destination; checking more commits than usual",
+              file=sys.stderr)
     shas = []
     for line in lines:
         parts = line.split()
@@ -166,22 +201,19 @@ def commits_from_pre_push(repo, remote, lines):
         _, local_sha, _, remote_sha = parts
         if local_sha == ZERO_SHA:
             continue  # deleting a remote branch publishes nothing
-        known = remote_sha != ZERO_SHA and subprocess.run(
-            ["git", "-C", str(repo), "cat-file", "-e", f"{remote_sha}^{{commit}}"],
-            capture_output=True,
-        ).returncode == 0
-        if known:
-            spec = [f"{remote_sha}..{local_sha}"]
-        else:
-            spec = [local_sha, "--not", f"--remotes={remote}" if remote else "--remotes"]
-        shas += git(repo, "rev-list", *spec).split()
+        known = set(published or ())
+        if remote_sha != ZERO_SHA:
+            known.add(remote_sha)
+        exclude = sorted(sha for sha in known if exists_locally(repo, sha))
+        shas += git(repo, "rev-list", local_sha, "--not", *exclude).split() if exclude else \
+            git(repo, "rev-list", local_sha).split()
     return list(dict.fromkeys(shas))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("remote", nargs="?", help="remote name (passed by git)")
-    parser.add_argument("url", nargs="?", help="remote URL (passed by git)")
+    parser.add_argument("url", nargs="?", help="the URL being pushed to (passed by git)")
     parser.add_argument("--range", help="check the commits in A..B instead of reading pre-push input")
     args = parser.parse_args()
 
@@ -190,7 +222,7 @@ def main():
     if args.range:
         shas = git(repo, "rev-list", args.range).split()
     else:
-        shas = commits_from_pre_push(repo, args.remote, sys.stdin.read().splitlines())
+        shas = commits_from_pre_push(repo, args.url or args.remote, sys.stdin.read().splitlines())
 
     problems = [p for sha in shas for p in check_commit(repo, sha, denylist)]
     if problems:

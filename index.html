@@ -93,7 +93,9 @@
     })();
   </script>
   <script src="assets/site.js" defer></script>
+  <script src="assets/lib.js" defer></script>
   <script src="assets/mosaic.js" defer></script>
+  <script src="assets/figures.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -185,6 +187,61 @@
         <h2>Foundation models that read medical images</h2>
       </header>
       <p class="section__intro">My team built image encoders and report-generation models for chest X-rays — Project MAIRA — and collaborated with Mayo Clinic to deploy draft reporting.</p>
+      <figure class="fig" id="fig-report">
+        <div class="fig__frame">
+          <div class="fig__visual fig__visual--scan">
+            <svg viewBox="0 0 300 300" role="img" aria-label="Illustrative chest X-ray drawing with three outlined regions, each linked to a sentence of a draft report.">
+              <defs>
+                <radialGradient id="xr-body" cx="50%" cy="48%" r="62%">
+                  <stop offset="0%" stop-color="#8f959d"/><stop offset="70%" stop-color="#454a51"/><stop offset="100%" stop-color="#16181b"/>
+                </radialGradient>
+                <radialGradient id="xr-lung" cx="50%" cy="38%" r="72%">
+                  <stop offset="0%" stop-color="#121418"/><stop offset="100%" stop-color="#30353b"/>
+                </radialGradient>
+                <filter id="xr-soft"><feGaussianBlur stdDeviation="2.4"/></filter>
+              </defs>
+              <rect width="300" height="300" fill="#08090b"/>
+              <path d="M58 42 Q150 20 242 42 L270 276 Q150 296 30 276 Z" fill="url(#xr-body)" filter="url(#xr-soft)"/>
+              <path d="M140 64 C 100 60 72 92 66 150 C 60 206 70 240 92 246 C 112 250 128 238 140 222 Z" fill="url(#xr-lung)" filter="url(#xr-soft)"/>
+              <path d="M160 64 C 200 60 228 92 234 150 C 240 206 232 240 210 246 C 192 250 176 242 168 232 Z" fill="url(#xr-lung)" filter="url(#xr-soft)"/>
+              <path d="M136 142 C 150 128 192 134 206 170 C 214 198 200 234 166 240 C 146 242 130 224 130 198 Z" fill="#8a9098" opacity="0.5" filter="url(#xr-soft)"/>
+              <rect x="143" y="40" width="14" height="236" fill="#a9afb7" opacity="0.32" filter="url(#xr-soft)"/>
+              <g fill="none" stroke="#bcc1c8" stroke-opacity="0.26" stroke-width="3" filter="url(#xr-soft)">
+                <path d="M146 74 C 114 65 82 77 68 101"/>
+                <path d="M154 74 C 186 65 218 77 232 101"/>
+                <path d="M146 99 C 114 90 82 102 68 126"/>
+                <path d="M154 99 C 186 90 218 102 232 126"/>
+                <path d="M146 124 C 114 115 82 127 68 151"/>
+                <path d="M154 124 C 186 115 218 127 232 151"/>
+                <path d="M146 149 C 114 140 82 152 68 176"/>
+                <path d="M154 149 C 186 140 218 152 232 176"/>
+                <path d="M146 174 C 114 165 82 177 68 201"/>
+                <path d="M154 174 C 186 165 218 177 232 201"/>
+                <path d="M146 199 C 114 190 82 202 68 226"/>
+                <path d="M154 199 C 186 190 218 202 232 226"/>
+              </g>
+              <g fill="none" stroke="#c8cdd3" stroke-opacity="0.5" stroke-width="5" filter="url(#xr-soft)">
+                <path d="M150 58 C 122 50 94 52 70 62"/><path d="M150 58 C 178 50 206 52 230 62"/>
+              </g>
+              <ellipse cx="96" cy="222" rx="26" ry="16" fill="#a0a6ae" opacity="0.35" filter="url(#xr-soft)"/>
+              <path d="M151 28 C 151 92 149 162 153 230 C 155 248 169 257 182 262" fill="none" stroke="#eef0f2" stroke-width="1.8" opacity="0.85"/>
+              <rect class="xr-box" data-finding="1" x="64" y="200" width="64" height="44" rx="4"/>
+              <rect class="xr-box" data-finding="2" x="128" y="128" width="88" height="116" rx="4"/>
+              <rect class="xr-box" data-finding="3" x="166" y="248" width="30" height="28" rx="4"/>
+            </svg>
+          </div>
+          <div class="fig__side">
+            <p class="fig__kicker">Draft report</p>
+            <h3 class="fig__title">Every sentence points to its evidence</h3>
+            <ol class="fig__list">
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="1"><span class="fig__swatch"></span>Right lower-zone opacity.</button></li>
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="2"><span class="fig__swatch"></span>Heart size at the upper limit of normal.</button></li>
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="3"><span class="fig__swatch"></span>Nasogastric tube tip below the diaphragm.</button></li>
+            </ol>
+          </div>
+        </div>
+        <figcaption>Grounded report generation, as in MAIRA-2: select a sentence to see the region it describes. Illustrative drawing, not patient data.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>arXiv</span><span>2025</span></p>
@@ -232,6 +289,46 @@
         <h2>AI in the radiotherapy planning room</h2>
       </header>
       <p class="section__intro">Clinicians spend an hour or more outlining organs on a CT scan before radiotherapy. Project InnerEye automates the routine part — and we took it into NHS use.</p>
+      <figure class="fig" id="fig-contours">
+        <div class="fig__frame">
+          <div class="fig__visual fig__visual--scan">
+            <svg viewBox="0 0 300 300" role="img" aria-label="Illustrative pelvic CT slice in which the bladder, prostate, rectum and femoral heads are outlined one after another.">
+              <defs><filter id="ct-soft"><feGaussianBlur stdDeviation="1.6"/></filter></defs>
+              <rect width="300" height="300" fill="#08090b"/>
+              <g filter="url(#ct-soft)">
+                <ellipse cx="150" cy="158" rx="132" ry="98" fill="#3c4047"/>
+                <ellipse cx="150" cy="158" rx="121" ry="87" fill="#25282d"/>
+                <ellipse cx="150" cy="160" rx="106" ry="75" fill="#4a4e55"/>
+                <circle cx="72" cy="162" r="22" fill="#d9dce0"/><circle cx="72" cy="162" r="13" fill="#9fa4ab"/>
+                <circle cx="228" cy="162" r="22" fill="#d9dce0"/><circle cx="228" cy="162" r="13" fill="#9fa4ab"/>
+                <path d="M92 196 Q110 222 128 230" fill="none" stroke="#cfd3d8" stroke-width="6"/>
+                <path d="M208 196 Q190 222 172 230" fill="none" stroke="#cfd3d8" stroke-width="6"/>
+                <path d="M128 240 Q150 252 172 240" fill="none" stroke="#d2d6db" stroke-width="7"/>
+                <ellipse cx="150" cy="122" rx="38" ry="28" fill="#2e3136"/>
+                <ellipse cx="150" cy="168" rx="18" ry="15" fill="#5a5e65"/>
+                <circle cx="150" cy="204" r="14" fill="#50545b"/><circle cx="150" cy="204" r="6" fill="#0c0e11"/>
+              </g>
+              <ellipse class="ct-contour" data-organ="bladder" cx="150" cy="122" rx="40" ry="30" pathLength="1"/>
+              <ellipse class="ct-contour" data-organ="prostate" cx="150" cy="168" rx="20" ry="17" pathLength="1"/>
+              <circle class="ct-contour" data-organ="rectum" cx="150" cy="204" r="16" pathLength="1"/>
+              <circle class="ct-contour" data-organ="femur" cx="72" cy="162" r="24" pathLength="1"/>
+              <circle class="ct-contour" data-organ="femur" cx="228" cy="162" r="24" pathLength="1"/>
+            </svg>
+          </div>
+          <div class="fig__side">
+            <p class="fig__kicker">Organs at risk</p>
+            <h3 class="fig__title">AI drafts the contours; clinicians review them</h3>
+            <ul class="fig__list">
+              <li class="fig__item" data-organ="bladder"><span class="fig__swatch"></span>Bladder</li>
+              <li class="fig__item" data-organ="prostate"><span class="fig__swatch"></span>Prostate</li>
+              <li class="fig__item" data-organ="rectum"><span class="fig__swatch"></span>Rectum</li>
+              <li class="fig__item" data-organ="femur"><span class="fig__swatch"></span>Femoral heads</li>
+            </ul>
+            <p class="fig__note">A clinician then checks and edits every structure before the treatment plan.</p>
+          </div>
+        </div>
+        <figcaption>Organ-at-risk contouring on a pelvic CT slice, as in Project InnerEye. Illustrative drawing, not patient data.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>JAMA Network Open</span><span>2020</span></p>
@@ -260,6 +357,24 @@
         <h2>Pathology, screening and biomarkers</h2>
       </header>
       <p class="section__intro">The same ideas carry over to pathology, screening and biomarker discovery.</p>
+      <figure class="fig" id="fig-attention">
+        <div class="fig__frame">
+          <div class="fig__visual">
+            <canvas role="img" aria-label="Illustrative tissue tile with a grid of tiles coloured by how much a model attends to each region."></canvas>
+          </div>
+          <div class="fig__side">
+            <p class="fig__kicker">Screening</p>
+            <h3 class="fig__title">Where the model looks</h3>
+            <ol class="fig__list">
+              <li class="fig__item"><span class="fig__swatch"></span>A whole-slide image is split into small tiles.</li>
+              <li class="fig__item"><span class="fig__swatch"></span>The model scores every tile; attention shows which regions drive its decision.</li>
+              <li class="fig__item"><span class="fig__swatch"></span>Clear negatives are filtered out; the rest go to a pathologist.</li>
+            </ol>
+            <button type="button" class="fig__toggle" aria-pressed="false">Hold attention map</button>
+          </div>
+        </div>
+        <figcaption>Weakly supervised learning on whole-slide images, as in the Barrett&#8217;s oesophagus screening work. Illustrative, not patient data.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>Nature Communications</span><span>2024</span></p>
@@ -287,6 +402,36 @@
         <h2>AI that does the science</h2>
       </header>
       <p class="section__intro">Agents that plan analyses, query what an organisation knows, and hand a case back to a human when unsure.</p>
+      <figure class="fig" id="fig-agent">
+        <div class="fig__frame">
+          <div class="fig__visual">
+            <svg viewBox="0 0 300 300" role="img" aria-label="Illustrative agent loop: plan, run analysis, check evidence and refine, ending in an answer or a hand-off to a human.">
+              <circle class="ag-ring" cx="150" cy="140" r="86"/>
+              <path class="ag-path" data-exit="answer" d="M150 226 L235 260"/>
+              <path class="ag-path" data-exit="human" d="M150 226 L68 260"/>
+              <text class="ag-center" x="150" y="144" text-anchor="middle">QUESTION</text>
+              <g data-step="0"><circle class="ag-node" cx="150" cy="54" r="8"/><text class="ag-label" x="150" y="80" text-anchor="middle">Plan</text></g>
+              <g data-step="1"><circle class="ag-node" cx="236" cy="140" r="8"/><text class="ag-label" x="250" y="144" text-anchor="start">Run</text></g>
+              <g data-step="2"><circle class="ag-node" cx="150" cy="226" r="8"/><text class="ag-label" x="150" y="210" text-anchor="middle">Check</text></g>
+              <g data-step="3"><circle class="ag-node" cx="64" cy="140" r="8"/><text class="ag-label" x="50" y="144" text-anchor="end">Refine</text></g>
+              <g data-exit="answer"><rect class="ag-exit" x="196" y="260" width="78" height="26" rx="13"/><text class="ag-label" x="235" y="277" text-anchor="middle">Answer</text></g>
+              <g data-exit="human"><rect class="ag-exit" x="26" y="260" width="84" height="26" rx="13"/><text class="ag-label" x="68" y="277" text-anchor="middle">Ask human</text></g>
+              <circle class="ag-dot" cx="150" cy="54" r="5"/>
+            </svg>
+          </div>
+          <div class="fig__side">
+            <p class="fig__kicker">Analysis agent</p>
+            <h3 class="fig__title">Plan, run, check, or ask a human</h3>
+            <ol class="fig__list">
+              <li class="fig__item" data-step="0"><span class="fig__swatch"></span>Plan the analysis from the question.</li>
+              <li class="fig__item" data-step="1"><span class="fig__swatch"></span>Run code and queries against the data.</li>
+              <li class="fig__item" data-step="2"><span class="fig__swatch"></span>Check the evidence; refine and loop if it is not enough.</li>
+              <li class="fig__item" data-step="exit"><span class="fig__swatch"></span>Answer with a traceable record, or hand back to a human when unsure.</li>
+            </ol>
+          </div>
+        </div>
+        <figcaption>The loop behind tool-using agents such as NOVA and the Firefly answer agent. Illustrative.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>Advisory</span><span>2026</span></p>
@@ -319,6 +464,23 @@
         <h2>Engineering that holds up in production</h2>
       </header>
       <p class="section__intro">Before medicine I built large systems: a model only matters if it runs reliably where people use it.</p>
+      <figure class="fig" id="fig-stream">
+        <div class="fig__frame">
+          <div class="fig__visual">
+            <canvas role="img" aria-label="Illustrative stream of events flowing from Skype, Xbox, Bing and Office through ingest, process and learn stages into a live chart."></canvas>
+          </div>
+          <div class="fig__side">
+            <p class="fig__kicker">Telemetry</p>
+            <h3 class="fig__title">Millions of events per second</h3>
+            <ol class="fig__list">
+              <li class="fig__item"><span class="fig__swatch"></span>Ingest events from Skype, then Xbox, Bing and Office.</li>
+              <li class="fig__item"><span class="fig__swatch"></span>Process: parse, enrich and aggregate in real time.</li>
+              <li class="fig__item"><span class="fig__swatch"></span>Learn: usage analytics and prediction models.</li>
+            </ol>
+          </div>
+        </div>
+        <figcaption>The real-time pipeline behind Skype telemetry, which became Microsoft&#8217;s first Azure-based telemetry platform. Illustrative.</figcaption>
+      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>Microsoft</span><span>2012–2015</span></p>

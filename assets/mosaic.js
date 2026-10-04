@@ -15,6 +15,8 @@
 
   const canvas = document.getElementById('mosaic');
   if (!canvas || !canvas.getContext) return;
+  if (!window.SiteLib) { console.error('mosaic: assets/lib.js must load first'); return; }
+  const { seeded, rgb, mix, rgba: css, onWidthChange } = window.SiteLib;
 
   const ctx = canvas.getContext('2d');
   const stat = document.getElementById('mosaic-stat');
@@ -71,32 +73,6 @@
   let rand = seeded(20260518);
 
   // ---------- helpers ----------
-
-  function seeded(seed) {
-    // mulberry32: small, fast, deterministic
-    return function () {
-      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-
-  function rgb(hex) {
-    let h = String(hex).trim().replace('#', '');
-    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
-    const n = parseInt(h, 16);
-    if (Number.isNaN(n)) return [128, 128, 128];
-    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  }
-
-  function mix(a, b, t) {
-    return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-  }
-
-  function css(c, alpha) {
-    return 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + alpha + ')';
-  }
 
   function ease(t) { return t < 0 ? 0 : t > 1 ? 1 : 1 - Math.pow(1 - t, 3); }
 
@@ -668,27 +644,14 @@
     if (document.hidden) running = false; else start();
   });
 
-  // Rebuild only when the width changes; mobile browsers fire resize on scroll.
-  let builtWidth = 0;
-  let resizeTimer = 0;
-  window.addEventListener('resize', function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
-      const width = Math.round(canvas.getBoundingClientRect().width);
-      if (width && width !== builtWidth) {
-        builtWidth = width;
-        running = false;
-        build();
-        replay();
-      }
-    }, 150);
+  onWidthChange(canvas, function () {
+    running = false;
+    build();
+    replay();
   });
 
   // ---------- go ----------
 
   readPalette();
-  if (build()) {
-    builtWidth = size;
-    replay();
-  }
+  if (build()) replay();
 })();

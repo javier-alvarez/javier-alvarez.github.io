@@ -563,3 +563,122 @@ a:hover { color: var(--accent); }
 
 .footer { border-top: 1px solid var(--line); color: var(--faint); font: 0.74rem/1.6 var(--font-mono); }
 .footer__inner { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 28px 44px; }
+
+/* ---------- Figures: illustrative panels in the work sections ---------- */
+
+.fig { margin: 0 0 36px; }
+
+.fig__frame {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--bg-elev);
+}
+
+@media (min-width: 760px) {
+  .fig__frame { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+}
+
+.fig__visual {
+  position: relative;
+  min-height: 280px;
+  border-bottom: 1px solid var(--line);
+  background: var(--slide-bg);
+}
+
+@media (min-width: 760px) {
+  .fig__visual { min-height: 330px; border-right: 1px solid var(--line); border-bottom: 0; }
+}
+
+/* Medical scans are dark in both themes, as on a reading-room monitor. */
+.fig__visual--scan { background: #08090b; }
+
+.fig__visual > svg,
+.fig__visual > canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+
+.fig__side { display: flex; flex-direction: column; gap: 12px; padding: 22px 24px 24px; }
+
+.fig__kicker {
+  margin: 0;
+  color: var(--accent);
+  font: 500 0.7rem/1.4 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.fig__title { margin: 0; font-family: var(--font-display); font-weight: 500; font-size: 1.28rem; line-height: 1.3; }
+
+.fig__list { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+
+.fig__item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.93rem;
+  line-height: 1.45;
+  text-align: left;
+  transition: background-color 0.2s, color 0.2s;
+}
+button.fig__item { cursor: pointer; }
+.fig__item.is-active { background: color-mix(in srgb, var(--accent) 11%, transparent); color: var(--ink); }
+.fig__item[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--c); }
+
+.fig__swatch { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--c, var(--accent)); transform: translateY(1px); }
+
+.fig__note { margin: 4px 0 0; color: var(--muted); font-size: 0.88rem; }
+
+.fig__toggle {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font: 500 0.75rem/1 var(--font-mono);
+  cursor: pointer;
+}
+.fig__toggle[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+
+.fig figcaption { margin-top: 10px; color: var(--faint); font: 0.74rem/1.55 var(--font-mono); }
+
+/* Per-item colours shared by the list swatches and the drawings. */
+/* Fixed bright colours: the scan panels are dark in both themes. */
+[data-finding="1"] { --c: #ff8a3d; }
+[data-finding="2"] { --c: #4fe0a8; }
+[data-finding="3"] { --c: #ff5fa6; }
+[data-organ="bladder"] { --c: #f2d14b; }
+[data-organ="prostate"] { --c: #ff5fa6; }
+[data-organ="rectum"] { --c: #4fe0a8; }
+[data-organ="femur"] { --c: #6aa8ff; }
+
+/* Chest X-ray: finding boxes. */
+.xr-box { fill: none; stroke: var(--c); stroke-width: 2; opacity: 0.5; transition: opacity 0.25s, stroke-width 0.25s; }
+.xr-box.is-active { opacity: 1; stroke-width: 3; }
+
+/* CT: organ contours trace themselves. */
+.ct-contour { fill: none; stroke: var(--c); stroke-width: 2.2; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.ct-contour.is-drawn { stroke-dashoffset: 0; transition: stroke-dashoffset 1.1s ease-in-out; }
+
+/* Agent loop. */
+.ag-ring { fill: none; stroke: var(--line); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.ag-node { fill: var(--bg-elev); stroke: var(--muted); stroke-width: 1.5; transition: fill 0.2s, stroke 0.2s; }
+.ag-node.is-active { fill: var(--accent); stroke: var(--accent); }
+.ag-label { fill: var(--ink); font: 500 13px var(--font-mono); }
+.ag-exit { fill: var(--bg-elev); stroke: var(--line); transition: stroke 0.2s, fill 0.2s; }
+.ag-exit.is-active { stroke: var(--accent-2); fill: color-mix(in srgb, var(--accent-2) 14%, var(--bg-elev)); }
+.ag-path { fill: none; stroke: var(--line); stroke-width: 1.5; }
+.ag-dot { fill: var(--accent-2); }
+.ag-center { fill: var(--muted); font: 500 12px var(--font-mono); letter-spacing: 0.08em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ct-contour.is-drawn, .xr-box, .ag-node, .ag-exit { transition: none; }
+}
