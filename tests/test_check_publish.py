@@ -40,7 +40,7 @@ class TempRepo:
             ["git", "-C", str(self.path), *args], check=True, capture_output=True, text=True, env=env,
         ).stdout.strip()
 
-    def commit(self, files, message="Update site", email=NOREPLY):
+    def commit(self, files, message="Update site", email=NOREPLY, committer=None):
         for name, content in files.items():
             target = self.path / name
             if content is None:
@@ -49,7 +49,7 @@ class TempRepo:
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(content if isinstance(content, bytes) else content.encode())
         self.git("add", "-A")
-        env = {**os.environ, "GIT_AUTHOR_EMAIL": email, "GIT_COMMITTER_EMAIL": email}
+        env = {**os.environ, "GIT_AUTHOR_EMAIL": email, "GIT_COMMITTER_EMAIL": committer or email}
         self.git("commit", "-q", "-m", message, env=env)
         return self.git("rev-parse", "HEAD")
 
@@ -136,6 +136,24 @@ class PublishGuardTest(unittest.TestCase):
         new = self.repo.commit({"index.html": "<p>v2</p>\n"})
         lines = [f"refs/heads/main {new} refs/heads/main {published}"]
         self.assertEqual(guard.commits_from_pre_push(self.repo.path, "origin", lines), [new])
+
+    def test_github_web_merge_committer_is_allowed(self):
+        sha = self.repo.commit({"index.html": "<p>Hi</p>\n"}, committer="noreply@github.com")
+        self.assertEqual(self.repo.problems(sha), [])
+
+    def test_commits_already_on_any_remote_branch_are_skipped(self):
+        base = self.repo.commit({"index.html": "<p>v1</p>\n"})
+        self.repo.git("update-ref", "refs/remotes/origin/feature", base)
+        published = self.repo.commit({"index.html": "<p>v2 on main</p>\n"})
+        self.repo.git("update-ref", "refs/remotes/origin/main", published)
+        self.repo.git("checkout", "-q", "-b", "feature", base)
+        new = self.repo.commit({"notes.md": "feature work\n"})
+        self.repo.git("merge", "-q", "--no-edit", "main")
+        merge = self.repo.git("rev-parse", "HEAD")
+        lines = [f"refs/heads/feature {merge} refs/heads/feature {base}"]
+        found = guard.commits_from_pre_push(self.repo.path, "origin", lines)
+        self.assertEqual(set(found), {new, merge})
+        self.assertNotIn(published, found)
 
     def test_pre_push_branch_deletion_checks_nothing(self):
         sha = self.repo.commit({"index.html": "<p>v1</p>\n"})

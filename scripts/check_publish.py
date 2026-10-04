@@ -34,7 +34,8 @@ from pathlib import Path
 ZERO_SHA = "0" * 40
 DEFAULT_DENYLIST = Path.home() / ".config" / "site-guard" / "denylist.txt"
 
-NOREPLY_EMAIL = re.compile(r"^(\d+\+)?[A-Za-z0-9-]+@users\.noreply\.github\.com$")
+# Personal no-reply addresses, plus the address GitHub commits web merges with.
+NOREPLY_EMAIL = re.compile(r"^((\d+\+)?[A-Za-z0-9-]+@users\.noreply\.github\.com|noreply@github\.com)$")
 
 ALLOWED_SUFFIXES = {
     ".html", ".css", ".js", ".json", ".svg", ".jpg", ".jpeg", ".png", ".webp",
@@ -166,14 +167,14 @@ def commits_from_pre_push(repo, remote, lines):
         _, local_sha, _, remote_sha = parts
         if local_sha == ZERO_SHA:
             continue  # deleting a remote branch publishes nothing
+        # Skip anything the remote already has, on any branch: it is public already.
+        spec = [local_sha, "--not", f"--remotes={remote}" if remote else "--remotes"]
         known = remote_sha != ZERO_SHA and subprocess.run(
             ["git", "-C", str(repo), "cat-file", "-e", f"{remote_sha}^{{commit}}"],
             capture_output=True,
         ).returncode == 0
         if known:
-            spec = [f"{remote_sha}..{local_sha}"]
-        else:
-            spec = [local_sha, "--not", f"--remotes={remote}" if remote else "--remotes"]
+            spec.append(remote_sha)
         shas += git(repo, "rev-list", *spec).split()
     return list(dict.fromkeys(shas))
 
