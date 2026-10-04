@@ -1,46 +1,42 @@
 // Illustrative figures in the work sections: a grounded chest X-ray report,
 // CT contouring, a pathology attention map, an agent loop and an event
 // stream. Everything is drawn here; nothing comes from patient data.
-// Animations run only while a figure is on screen and stay still for
-// visitors who prefer reduced motion.
+// Animations run only while a figure is on screen and the tab is visible,
+// and hold a static state for visitors who prefer reduced motion.
 (function () {
   'use strict';
 
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.SiteLib) { console.error('figures: assets/lib.js must load first'); return; }
+  const { rgb, rgba, mix, seeded, cssVar, onWidthChange } = window.SiteLib;
 
-  function whileVisible(el, start, stop) {
-    if (!('IntersectionObserver' in window)) { start(); return; }
-    new IntersectionObserver(function (entries) {
-      if (entries[0].isIntersecting) start(); else stop();
-    }, { threshold: 0.15 }).observe(el);
+  const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  function reduced() { return motion.matches; }
+
+  // Re-run every figure's start/stop when the motion preference changes.
+  const refreshers = [];
+  if (motion.addEventListener) {
+    motion.addEventListener('change', function () { refreshers.forEach(function (fn) { fn(); }); });
   }
 
-  function cssVar(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  }
-
-  function rgb(hex) {
-    let h = String(hex).trim().replace('#', '');
-    if (h.length === 3) h = h.split('').map(function (c) { return c + c; }).join('');
-    const n = parseInt(h, 16);
-    return Number.isNaN(n) ? [128, 128, 128] : [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-  }
-
-  function rgba(c, a) {
-    return 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + a + ')';
-  }
-
-  function mix(a, b, t) {
-    return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
-  }
-
-  function seeded(seed) {
-    return function () {
-      seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
+  // Run `start` while `el` is on screen and the tab is visible, `stop`
+  // otherwise. Returns a function that says whether it is on screen now.
+  function track(el, start, stop) {
+    let visible = false;
+    function update() {
+      if (visible && !document.hidden) start(); else stop();
+    }
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[entries.length - 1].isIntersecting;  // the latest entry is the current state
+        update();
+      }, { threshold: 0.15 }).observe(el);
+    } else {
+      visible = true;
+      setTimeout(update, 0);
+    }
+    document.addEventListener('visibilitychange', update);
+    refreshers.push(function () { stop(); update(); });
+    return function () { return visible && !document.hidden; };
   }
 
   function sizeCanvas(canvas) {
@@ -55,17 +51,13 @@
     return { ctx: ctx, w: w, h: h, dpr: dpr };
   }
 
-  // Call `fn` when the element's width changes (not on mobile scroll resizes).
-  function onWidthChange(el, fn) {
-    let width = Math.round(el.getBoundingClientRect().width);
-    let timer = 0;
-    window.addEventListener('resize', function () {
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        const next = Math.round(el.getBoundingClientRect().width);
-        if (next && next !== width) { width = next; fn(); }
-      }, 150);
-    });
+  function offscreen(view) {
+    const layer = document.createElement('canvas');
+    layer.width = Math.round(view.w * view.dpr);
+    layer.height = Math.round(view.h * view.dpr);
+    const ctx = layer.getContext('2d');
+    ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+    return { canvas: layer, ctx: ctx };
   }
 
   // ---------- 1. Grounded chest X-ray report ----------
@@ -76,34 +68,47 @@
     const boxes = fig.querySelectorAll('.xr-box');
     let current = 0;
     let timer = 0;
-    let held = false;
+    // Clicking a sentence pins it; hovering or focusing one previews it.
+    let pinned = null;
+    let hovered = null;
+    let focused = null;
 
+    function held() {
+      if (hovered !== null) return hovered;
+      if (focused !== null) return focused;
+      return pinned;
+    }
     function show(n) {
       current = n;
-      items.forEach(function (el) { el.classList.toggle('is-active', el.dataset.finding === String(n)); });
+      items.forEach(function (el) {
+        el.classList.toggle('is-active', el.dataset.finding === String(n));
+        el.setAttribute('aria-pressed', String(el.dataset.finding === String(pinned)));
+      });
       boxes.forEach(function (el) { el.classList.toggle('is-active', el.dataset.finding === String(n)); });
     }
     function next() { show((current % 3) + 1); }
     function start() {
-      if (reducedMotion || held || timer) return;
-      next();
-      timer = setInterval(next, 2400);
+      if (held() !== null) { show(held()); return; }
+      if (reduced()) { show(current || 1); return; }
+      if (!timer) { next(); timer = setInterval(next, 2400); }
     }
     function stop() { clearInterval(timer); timer = 0; }
+    function refresh() {
+      if (held() !== null) { stop(); show(held()); }
+      else if (visible()) start();
+      else show(current);
+    }
 
     items.forEach(function (el) {
       const n = Number(el.dataset.finding);
-      const hold = function () { held = true; stop(); show(n); };
-      const release = function () { held = false; start(); };
-      el.addEventListener('mouseenter', hold);
-      el.addEventListener('focus', hold);
-      el.addEventListener('click', hold);
-      el.addEventListener('mouseleave', release);
-      el.addEventListener('blur', release);
+      el.addEventListener('mouseenter', function () { hovered = n; refresh(); });
+      el.addEventListener('mouseleave', function () { hovered = null; refresh(); });
+      el.addEventListener('focus', function () { focused = n; refresh(); });
+      el.addEventListener('blur', function () { focused = null; refresh(); });
+      el.addEventListener('click', function () { pinned = pinned === n ? null : n; refresh(); });
     });
 
-    if (reducedMotion) show(1);
-    whileVisible(fig, start, stop);
+    const visible = track(fig, start, stop);
   })();
 
   // ---------- 2. CT organ contouring ----------
@@ -127,14 +132,12 @@
       render();
     }
     function start() {
-      if (reducedMotion || timer) return;
-      tick();
-      timer = setInterval(tick, 1300);
+      if (reduced()) { step = organs.length; render(); return; }
+      if (!timer) { tick(); timer = setInterval(tick, 1300); }
     }
     function stop() { clearInterval(timer); timer = 0; }
 
-    if (reducedMotion) { step = organs.length; render(); }
-    whileVisible(fig, start, stop);
+    track(fig, start, stop);
   })();
 
   // ---------- 3. Pathology attention map ----------
@@ -145,13 +148,14 @@
     const toggle = fig.querySelector('.fig__toggle');
     let view = null;
     let tissue = null;
-    let hotspots = [];
     let heat = null;
-    let grid = null;
+    let dirty = true;
     let raf = 0;
     let t0 = 0;
-    let held = reducedMotion;
-    toggle.setAttribute('aria-pressed', String(held));
+    let held = null;  // null until the visitor uses the toggle
+
+    // With reduced motion the map is shown by default, as a still.
+    function holding() { return held === null ? reduced() : held; }
 
     function build() {
       view = sizeCanvas(canvas);
@@ -162,15 +166,9 @@
       const colours = dark
         ? { stroma: '#05070a', fibre: 'rgba(77,141,255,0.07)', cyto: 'rgba(255,95,166,0.22)', lumen: '#020304', nucleus: '#4d8dff' }
         : { stroma: '#f4d6e1', fibre: 'rgba(196,110,150,0.22)', cyto: 'rgba(214,120,165,0.55)', lumen: '#fdf6f8', nucleus: 'rgba(75,44,122,0.85)' };
-      // Amber to orange stands out against both the pink stain and the dark field.
-      heat = [rgb('#ffcf4a'), rgb('#ff6a1a')];
-      grid = rgb(cssVar('--ink'));
 
-      tissue = document.createElement('canvas');
-      tissue.width = canvas.width;
-      tissue.height = canvas.height;
-      const t = tissue.getContext('2d');
-      t.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
+      tissue = offscreen(view);
+      const t = tissue.ctx;
       t.fillStyle = colours.stroma;
       t.fillRect(0, 0, w, h);
 
@@ -236,43 +234,48 @@
         t.fill();
       }
 
-      // The model attends to two glands strongly and one weakly.
-      hotspots = glands.slice(0, 3).map(function (g, i) {
+      // The heat layer is computed once here; frames only change its opacity.
+      // The model attends to two glands strongly and one weakly. Amber to
+      // orange stands out against both the pink stain and the dark field.
+      const hotspots = glands.slice(0, 3).map(function (g, i) {
         return { x: g.x, y: g.y, sigma: g.r * 1.7, weight: i < 2 ? 1 : 0.55 };
       });
-    }
-
-    function attentionAt(x, y) {
-      let best = 0;
-      hotspots.forEach(function (s) {
-        const d2 = (s.x - x) * (s.x - x) + (s.y - y) * (s.y - y);
-        best = Math.max(best, s.weight * Math.exp(-d2 / (2 * s.sigma * s.sigma)));
-      });
-      return best;
+      const low = rgb('#ffcf4a');
+      const high = rgb('#ff6a1a');
+      heat = offscreen(view);
+      const hc = heat.ctx;
+      const tile = Math.max(14, size / 11);
+      for (let y = 0; y < h; y += tile) {
+        for (let x = 0; x < w; x += tile) {
+          const cx = x + tile / 2;
+          const cy = y + tile / 2;
+          let a = 0;
+          hotspots.forEach(function (s) {
+            const d2 = (s.x - cx) * (s.x - cx) + (s.y - cy) * (s.y - cy);
+            a = Math.max(a, s.weight * Math.exp(-d2 / (2 * s.sigma * s.sigma)));
+          });
+          if (a < 0.08) continue;
+          hc.fillStyle = rgba(mix(low, high, a), a * 0.62);
+          hc.fillRect(x, y, tile, tile);
+        }
+      }
+      hc.strokeStyle = rgba(rgb(cssVar('--ink')), 0.12);
+      hc.lineWidth = 1;
+      hc.beginPath();
+      for (let x = tile; x < w; x += tile) { hc.moveTo(Math.round(x) + 0.5, 0); hc.lineTo(Math.round(x) + 0.5, h); }
+      for (let y = tile; y < h; y += tile) { hc.moveTo(0, Math.round(y) + 0.5); hc.lineTo(w, Math.round(y) + 0.5); }
+      hc.stroke();
+      dirty = false;
     }
 
     function draw(alpha) {
       const ctx = view.ctx;
-      const w = view.w;
-      const h = view.h;
-      ctx.clearRect(0, 0, w, h);
-      ctx.drawImage(tissue, 0, 0, w, h);
+      ctx.clearRect(0, 0, view.w, view.h);
+      ctx.drawImage(tissue.canvas, 0, 0, view.w, view.h);
       if (alpha <= 0.01) return;
-      const tile = Math.max(14, Math.min(w, h) / 11);
-      for (let y = 0; y < h; y += tile) {
-        for (let x = 0; x < w; x += tile) {
-          const a = attentionAt(x + tile / 2, y + tile / 2);
-          if (a < 0.08) continue;
-          ctx.fillStyle = rgba(mix(heat[0], heat[1], a), a * 0.62 * alpha);
-          ctx.fillRect(x, y, tile, tile);
-        }
-      }
-      ctx.strokeStyle = rgba(grid, 0.12 * alpha);
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let x = tile; x < w; x += tile) { ctx.moveTo(Math.round(x) + 0.5, 0); ctx.lineTo(Math.round(x) + 0.5, h); }
-      for (let y = tile; y < h; y += tile) { ctx.moveTo(0, Math.round(y) + 0.5); ctx.lineTo(w, Math.round(y) + 0.5); }
-      ctx.stroke();
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(heat.canvas, 0, 0, view.w, view.h);
+      ctx.globalAlpha = 1;
     }
 
     // Attention fades in and out over seven seconds unless it is held on.
@@ -282,21 +285,24 @@
       raf = requestAnimationFrame(frame);
     }
     function start() {
-      if (!view) build();
-      if (held || reducedMotion) { draw(held ? 1 : 0); return; }
+      if (dirty) build();
+      toggle.setAttribute('aria-pressed', String(holding()));
+      if (holding() || reduced()) { draw(holding() ? 1 : 0); return; }
       if (!raf) raf = requestAnimationFrame(frame);
     }
     function stop() { cancelAnimationFrame(raf); raf = 0; }
+    function restart() { stop(); if (visible()) start(); }
 
+    toggle.setAttribute('aria-pressed', String(holding()));
     toggle.addEventListener('click', function () {
-      held = !held;
+      held = !holding();
       toggle.setAttribute('aria-pressed', String(held));
-      stop();
-      start();
+      restart();
     });
-    window.addEventListener('themechange', function () { if (view) { build(); stop(); start(); } });
-    onWidthChange(canvas, function () { build(); stop(); start(); });
-    whileVisible(fig, start, stop);
+    // Off screen, just mark the drawing stale; it is rebuilt when next shown.
+    window.addEventListener('themechange', function () { dirty = true; restart(); });
+    onWidthChange(canvas, function () { dirty = true; restart(); });
+    const visible = track(fig, start, stop);
   })();
 
   // ---------- 4. Agent loop ----------
@@ -306,15 +312,24 @@
     const svg = fig.querySelector('svg');
     const dot = svg.querySelector('.ag-dot');
     const nodes = Array.prototype.slice.call(svg.querySelectorAll('g[data-step] .ag-node'));
-    const exits = {
-      answer: svg.querySelector('g[data-exit="answer"] .ag-exit'),
-      human: svg.querySelector('g[data-exit="human"] .ag-exit'),
-    };
     const items = fig.querySelectorAll('.fig__item[data-step]');
-    const centre = { x: 150, y: 140 };
-    const radius = 86;
-    const check = { x: 150, y: 226 };
-    const pill = { answer: { x: 235, y: 273 }, human: { x: 68, y: 273 } };
+    const num = function (el, name) { return Number(el.getAttribute(name)); };
+
+    // Geometry comes from the drawing, so the two cannot drift apart.
+    const ring = svg.querySelector('.ag-ring');
+    const centre = { x: num(ring, 'cx'), y: num(ring, 'cy') };
+    const radius = num(ring, 'r');
+    const check = { x: num(nodes[2], 'cx'), y: num(nodes[2], 'cy') };
+    const exits = {};
+    ['answer', 'human'].forEach(function (name) {
+      const rect = svg.querySelector('g[data-exit="' + name + '"] .ag-exit');
+      // The dot stops on the pill's top edge, clear of its label.
+      const target = { x: num(rect, 'x') + num(rect, 'width') / 2, y: num(rect, 'y') };
+      svg.querySelector('.ag-path[data-exit="' + name + '"]')
+        .setAttribute('d', 'M' + check.x + ' ' + check.y + ' L' + target.x + ' ' + target.y);
+      exits[name] = { rect: rect, target: target };
+    });
+
     const LAP_MS = 3200;
     const EXIT_MS = 900;
     const HOLD_MS = 1400;
@@ -330,26 +345,27 @@
 
     function highlight(step, exit) {
       nodes.forEach(function (el, i) { el.classList.toggle('is-active', i === step); });
-      Object.keys(exits).forEach(function (k) { exits[k].classList.toggle('is-active', k === exit); });
-      const item = exit ? 'exit' : String(step === 3 ? 2 : step);
-      items.forEach(function (el) { el.classList.toggle('is-active', step !== -1 || exit ? el.dataset.step === item : false); });
+      Object.keys(exits).forEach(function (k) { exits[k].rect.classList.toggle('is-active', k === exit); });
+      // Refine (node 3) belongs to the "check and refine" step in the list.
+      const item = exit ? 'exit' : step === -1 ? null : String(step === 3 ? 2 : step);
+      items.forEach(function (el) { el.classList.toggle('is-active', el.dataset.step === item); });
     }
 
-    function place(x, y) { dot.setAttribute('cx', x.toFixed(1)); dot.setAttribute('cy', y.toFixed(1)); }
+    function place(p) { dot.setAttribute('cx', p.x.toFixed(1)); dot.setAttribute('cy', p.y.toFixed(1)); }
 
     function frame(now) {
       if (!run) run = newRun(now);
       const t = now - run.start;
       if (t < run.loopMs) {
         const angle = -Math.PI / 2 + (t / LAP_MS) * Math.PI * 2;
-        place(centre.x + Math.cos(angle) * radius, centre.y + Math.sin(angle) * radius);
+        place({ x: centre.x + Math.cos(angle) * radius, y: centre.y + Math.sin(angle) * radius });
         const quarter = ((angle + Math.PI / 2) / (Math.PI / 2)) % 4;
         const near = Math.abs(quarter - Math.round(quarter)) < 0.22 ? Math.round(quarter) % 4 : -1;
         highlight(near, null);
       } else if (t < run.loopMs + EXIT_MS) {
         const k = (t - run.loopMs) / EXIT_MS;
-        const to = pill[run.exit];
-        place(check.x + (to.x - check.x) * k, check.y + (to.y - check.y) * k);
+        const to = exits[run.exit].target;
+        place({ x: check.x + (to.x - check.x) * k, y: check.y + (to.y - check.y) * k });
         highlight(-1, null);
       } else if (t < run.loopMs + EXIT_MS + HOLD_MS) {
         highlight(-1, run.exit);
@@ -358,11 +374,13 @@
       }
       raf = requestAnimationFrame(frame);
     }
-    function start() { if (!reducedMotion && !raf) raf = requestAnimationFrame(frame); }
+    function start() {
+      if (reduced()) { place(exits.answer.target); highlight(-1, 'answer'); return; }
+      if (!raf) raf = requestAnimationFrame(frame);
+    }
     function stop() { cancelAnimationFrame(raf); raf = 0; }
 
-    if (reducedMotion) { place(pill.answer.x, pill.answer.y); highlight(-1, 'answer'); }
-    whileVisible(fig, start, stop);
+    track(fig, start, stop);
   })();
 
   // ---------- 5. Event stream ----------
@@ -418,6 +436,12 @@
       const before = particles.length;
       particles = particles.filter(function (p) { return p.x < w * stages[2].x + 4; });
       bucket += before - particles.length;
+    }
+
+    // A still frame for reduced motion: run the stream briefly, off screen.
+    function warmUp() {
+      particles = [];
+      for (let i = 0; i < 180; i++) update(1 / 60);
     }
 
     function draw() {
@@ -482,8 +506,8 @@
     }
     function start() {
       if (!view) build();
-      if (reducedMotion) {
-        for (let i = 0; i < 180; i++) update(1 / 60);
+      if (reduced()) {
+        if (!particles.length) warmUp();
         draw();
         return;
       }
@@ -492,7 +516,12 @@
     function stop() { cancelAnimationFrame(raf); raf = 0; }
 
     window.addEventListener('themechange', function () { if (view) { build(); draw(); } });
-    onWidthChange(canvas, function () { particles = []; build(); draw(); });
-    whileVisible(fig, start, stop);
+    onWidthChange(canvas, function () {
+      if (!view) return;
+      build();
+      if (reduced()) warmUp(); else particles = [];
+      draw();
+    });
+    track(fig, start, stop);
   })();
 })();

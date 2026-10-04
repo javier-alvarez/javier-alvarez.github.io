@@ -56,6 +56,15 @@ class TempRepo:
     def problems(self, sha):
         return guard.check_commit(self.path, sha, DENYLIST)
 
+    def make_remote(self):
+        """A bare repository standing in for GitHub."""
+        self.remote_dir = tempfile.TemporaryDirectory()
+        subprocess.run(["git", "init", "-q", "--bare", self.remote_dir.name], check=True)
+        return self.remote_dir.name
+
+    def publish(self, remote, sha, branch):
+        self.git("push", "-q", remote, f"{sha}:refs/heads/{branch}")
+
 
 class PublishGuardTest(unittest.TestCase):
     def setUp(self):
@@ -131,34 +140,56 @@ class PublishGuardTest(unittest.TestCase):
         bad = self.repo.commit({})
         self.assertBlocked(self.repo.problems(bad), "image metadata can identify location")
 
-    def test_pre_push_input_selects_only_unpublished_commits(self):
-        published = self.repo.commit({"index.html": "<p>v1</p>\n"})
-        new = self.repo.commit({"index.html": "<p>v2</p>\n"})
-        lines = [f"refs/heads/main {new} refs/heads/main {published}"]
-        self.assertEqual(guard.commits_from_pre_push(self.repo.path, "origin", lines), [new])
-
     def test_github_web_merge_committer_is_allowed(self):
         sha = self.repo.commit({"index.html": "<p>Hi</p>\n"}, committer="noreply@github.com")
         self.assertEqual(self.repo.problems(sha), [])
 
     def test_commits_already_on_any_remote_branch_are_skipped(self):
+        remote = self.repo.make_remote()
+        self.addCleanup(self.repo.remote_dir.cleanup)
         base = self.repo.commit({"index.html": "<p>v1</p>\n"})
-        self.repo.git("update-ref", "refs/remotes/origin/feature", base)
+        self.repo.publish(remote, base, "feature")
         published = self.repo.commit({"index.html": "<p>v2 on main</p>\n"})
-        self.repo.git("update-ref", "refs/remotes/origin/main", published)
+        self.repo.publish(remote, published, "main")
         self.repo.git("checkout", "-q", "-b", "feature", base)
         new = self.repo.commit({"notes.md": "feature work\n"})
         self.repo.git("merge", "-q", "--no-edit", "main")
         merge = self.repo.git("rev-parse", "HEAD")
         lines = [f"refs/heads/feature {merge} refs/heads/feature {base}"]
-        found = guard.commits_from_pre_push(self.repo.path, "origin", lines)
+        found = guard.commits_from_pre_push(self.repo.path, remote, lines)
         self.assertEqual(set(found), {new, merge})
-        self.assertNotIn(published, found)
+
+    def test_stale_local_tracking_ref_is_not_trusted(self):
+        remote = self.repo.make_remote()
+        self.addCleanup(self.repo.remote_dir.cleanup)
+        base = self.repo.commit({"index.html": "<p>v1</p>\n"})
+        self.repo.publish(remote, base, "main")
+        unpublished = self.repo.commit({"index.html": "<p>draft</p>\n"})
+        # A local ref claims the remote has this commit, but it does not.
+        self.repo.git("update-ref", "refs/remotes/origin/wip", unpublished)
+        lines = [f"refs/heads/main {unpublished} refs/heads/main {base}"]
+        self.assertEqual(guard.commits_from_pre_push(self.repo.path, remote, lines), [unpublished])
+
+    def test_unreachable_destination_checks_more_not_less(self):
+        first = self.repo.commit({"index.html": "<p>v1</p>\n"})
+        second = self.repo.commit({"index.html": "<p>v2</p>\n"})
+        lines = [f"refs/heads/main {second} refs/heads/main {guard.ZERO_SHA}"]
+        found = guard.commits_from_pre_push(self.repo.path, "/nonexistent/remote.git", lines)
+        self.assertEqual(set(found), {first, second})
+
+    def test_pre_push_input_selects_only_unpublished_commits(self):
+        remote = self.repo.make_remote()
+        self.addCleanup(self.repo.remote_dir.cleanup)
+        published = self.repo.commit({"index.html": "<p>v1</p>\n"})
+        self.repo.publish(remote, published, "main")
+        new = self.repo.commit({"index.html": "<p>v2</p>\n"})
+        lines = [f"refs/heads/main {new} refs/heads/main {published}"]
+        self.assertEqual(guard.commits_from_pre_push(self.repo.path, remote, lines), [new])
 
     def test_pre_push_branch_deletion_checks_nothing(self):
         sha = self.repo.commit({"index.html": "<p>v1</p>\n"})
         lines = [f"(delete) {guard.ZERO_SHA} refs/heads/old {sha}"]
-        self.assertEqual(guard.commits_from_pre_push(self.repo.path, "origin", lines), [])
+        self.assertEqual(guard.commits_from_pre_push(self.repo.path, None, lines), [])
 
 
 if __name__ == "__main__":

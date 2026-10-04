@@ -629,6 +629,7 @@ a:hover { color: var(--accent); }
 }
 button.fig__item { cursor: pointer; }
 .fig__item.is-active { background: color-mix(in srgb, var(--accent) 11%, transparent); color: var(--ink); }
+.fig__item[aria-pressed="true"] { box-shadow: inset 0 0 0 1px var(--c); }
 
 .fig__swatch { flex: none; width: 10px; height: 10px; border-radius: 3px; background: var(--c, var(--accent)); transform: translateY(1px); }
 
@@ -650,16 +651,17 @@ button.fig__item { cursor: pointer; }
 .fig figcaption { margin-top: 10px; color: var(--faint); font: 0.74rem/1.55 var(--font-mono); }
 
 /* Per-item colours shared by the list swatches and the drawings. */
-[data-finding="1"] { --c: var(--driver-1); }
-[data-finding="2"] { --c: var(--protect-1); }
-[data-finding="3"] { --c: var(--accent-2); }
+/* Fixed bright colours: the scan panels are dark in both themes. */
+[data-finding="1"] { --c: #ff8a3d; }
+[data-finding="2"] { --c: #4fe0a8; }
+[data-finding="3"] { --c: #ff5fa6; }
 [data-organ="bladder"] { --c: #f2d14b; }
 [data-organ="prostate"] { --c: #ff5fa6; }
 [data-organ="rectum"] { --c: #4fe0a8; }
 [data-organ="femur"] { --c: #6aa8ff; }
 
 /* Chest X-ray: finding boxes. */
-.xr-box { fill: none; stroke: var(--c); stroke-width: 2; opacity: 0.35; transition: opacity 0.25s, stroke-width 0.25s; }
+.xr-box { fill: none; stroke: var(--c); stroke-width: 2; opacity: 0.5; transition: opacity 0.25s, stroke-width 0.25s; }
 .xr-box.is-active { opacity: 1; stroke-width: 3; }
 
 /* CT: organ contours trace themselves. */

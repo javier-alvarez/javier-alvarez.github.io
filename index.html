@@ -93,6 +93,7 @@
     })();
   </script>
   <script src="assets/site.js" defer></script>
+  <script src="assets/lib.js" defer></script>
   <script src="assets/mosaic.js" defer></script>
   <script src="assets/figures.js" defer></script>
 </head>
@@ -233,9 +234,9 @@
             <p class="fig__kicker">Draft report</p>
             <h3 class="fig__title">Every sentence points to its evidence</h3>
             <ol class="fig__list">
-              <li><button type="button" class="fig__item" data-finding="1"><span class="fig__swatch"></span>Right lower-zone opacity.</button></li>
-              <li><button type="button" class="fig__item" data-finding="2"><span class="fig__swatch"></span>Heart size at the upper limit of normal.</button></li>
-              <li><button type="button" class="fig__item" data-finding="3"><span class="fig__swatch"></span>Nasogastric tube tip below the diaphragm.</button></li>
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="1"><span class="fig__swatch"></span>Right lower-zone opacity.</button></li>
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="2"><span class="fig__swatch"></span>Heart size at the upper limit of normal.</button></li>
+              <li><button type="button" class="fig__item" aria-pressed="false" data-finding="3"><span class="fig__swatch"></span>Nasogastric tube tip below the diaphragm.</button></li>
             </ol>
           </div>
         </div>
@@ -406,8 +407,8 @@
           <div class="fig__visual">
             <svg viewBox="0 0 300 300" role="img" aria-label="Illustrative agent loop: plan, run analysis, check evidence and refine, ending in an answer or a hand-off to a human.">
               <circle class="ag-ring" cx="150" cy="140" r="86"/>
-              <path class="ag-path" d="M150 226 L232 272"/>
-              <path class="ag-path" d="M150 226 L68 272"/>
+              <path class="ag-path" data-exit="answer" d="M150 226 L235 260"/>
+              <path class="ag-path" data-exit="human" d="M150 226 L68 260"/>
               <text class="ag-center" x="150" y="144" text-anchor="middle">QUESTION</text>
               <g data-step="0"><circle class="ag-node" cx="150" cy="54" r="8"/><text class="ag-label" x="150" y="80" text-anchor="middle">Plan</text></g>
               <g data-step="1"><circle class="ag-node" cx="236" cy="140" r="8"/><text class="ag-label" x="250" y="144" text-anchor="start">Run</text></g>
