@@ -162,7 +162,7 @@
         <div class="about__text">
           <p>I take AI out of the lab and into the places where it has to work — radiotherapy, radiology and, now, drug discovery.</p>
           <p>I studied computer science at the Universidad de Oviedo and wrote my master’s thesis at the University of Cambridge. After engineering roles at Telefónica I+D, Redgate, Citrix and Featurespace, I joined Microsoft in 2012 and built Skype’s real-time telemetry pipeline, later scaled across Xbox, Bing and Office.</p>
-          <p>For 10 years at Microsoft Research I worked on AI for medicine. I led Project InnerEye — radiotherapy AI that cut contouring time by 36–67% in NHS use, open-sourced and adopted by 30+ organisations — and AI engineering through FDA 510(k) clearance. As Senior Director in Health Futures I led a 13-person team across the UK, US and India building multimodal foundation models, collaborating with Mayo Clinic to deploy draft reporting for chest X-rays, and with Novartis and Cyted.</p>
+          <p>For 10 years at Microsoft Research I worked on AI for medicine. I led Project InnerEye — radiotherapy AI that cut contouring time by 36–67% in NHS use, open-sourced and adopted by 30+ organisations — and AI engineering for cancer treatment through FDA 510(k) clearance. As Senior Director in Health Futures I led a multidisciplinary team across continents building multimodal foundation models, with partners in three areas: radiology, deploying draft chest X-ray reports with Mayo Clinic; cancer screening with Cyted; and medical imaging in clinical trials with Novartis.</p>
           <p>In 2026, as an advisor, I worked on autonomous chest X-ray reporting and built the knowledge-base layer of the open-source Firefly Agentic framework. Today I am Director of AI at Quotient Therapeutics, a Flagship Pioneering company using somatic genomics to discover medicines.</p>
         </div>
         <aside class="about__aside">
@@ -308,11 +308,11 @@
                 <ellipse cx="150" cy="168" rx="18" ry="15" fill="#5a5e65"/>
                 <circle cx="150" cy="204" r="14" fill="#50545b"/><circle cx="150" cy="204" r="6" fill="#0c0e11"/>
               </g>
-              <ellipse class="ct-contour" data-organ="bladder" cx="150" cy="122" rx="40" ry="30" pathLength="1"/>
-              <ellipse class="ct-contour" data-organ="prostate" cx="150" cy="168" rx="20" ry="17" pathLength="1"/>
-              <circle class="ct-contour" data-organ="rectum" cx="150" cy="204" r="16" pathLength="1"/>
-              <circle class="ct-contour" data-organ="femur" cx="72" cy="162" r="24" pathLength="1"/>
-              <circle class="ct-contour" data-organ="femur" cx="228" cy="162" r="24" pathLength="1"/>
+              <path class="ct-contour" data-organ="bladder" d="M110 122 a40 30 0 1 0 80 0 a40 30 0 1 0 -80 0 Z"/>
+              <path class="ct-contour" data-organ="prostate" d="M130 168 a20 17 0 1 0 40 0 a20 17 0 1 0 -40 0 Z"/>
+              <path class="ct-contour" data-organ="rectum" d="M134 204 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0 Z"/>
+              <path class="ct-contour" data-organ="femur" d="M48 162 a24 24 0 1 0 48 0 a24 24 0 1 0 -48 0 Z"/>
+              <path class="ct-contour" data-organ="femur" d="M204 162 a24 24 0 1 0 48 0 a24 24 0 1 0 -48 0 Z"/>
             </svg>
           </div>
           <div class="fig__side">
@@ -391,7 +391,7 @@
         <article class="card">
           <p class="card__meta"><span>Microsoft Research</span><span>2022–2025</span></p>
           <h3>Multimodal biomarker discovery</h3>
-          <p>Foundation models and AI agents across imaging, text and clinical data, including a collaboration with Novartis.</p>
+          <p>Foundation models and AI agents across imaging, text and clinical data.</p>
         </article>
       </div>
     </section>
@@ -464,23 +464,6 @@
         <h2>Engineering that holds up in production</h2>
       </header>
       <p class="section__intro">Before medicine I built large systems: a model only matters if it runs reliably where people use it.</p>
-      <figure class="fig" id="fig-stream">
-        <div class="fig__frame">
-          <div class="fig__visual">
-            <canvas role="img" aria-label="Illustrative stream of events flowing from Skype, Xbox, Bing and Office through ingest, process and learn stages into a live chart."></canvas>
-          </div>
-          <div class="fig__side">
-            <p class="fig__kicker">Telemetry</p>
-            <h3 class="fig__title">Millions of events per second</h3>
-            <ol class="fig__list">
-              <li class="fig__item"><span class="fig__swatch"></span>Ingest events from Skype, then Xbox, Bing and Office.</li>
-              <li class="fig__item"><span class="fig__swatch"></span>Process: parse, enrich and aggregate in real time.</li>
-              <li class="fig__item"><span class="fig__swatch"></span>Learn: usage analytics and prediction models.</li>
-            </ol>
-          </div>
-        </div>
-        <figcaption>The real-time pipeline behind Skype telemetry, which became Microsoft&#8217;s first Azure-based telemetry platform. Illustrative.</figcaption>
-      </figure>
       <div class="cards">
         <article class="card">
           <p class="card__meta"><span>Microsoft</span><span>2012–2015</span></p>

@@ -1,6 +1,5 @@
 // Illustrative figures in the work sections: a grounded chest X-ray report,
-// CT contouring, a pathology attention map, an agent loop and an event
-// stream. Everything is drawn here; nothing comes from patient data.
+// CT contouring, a pathology attention map and an agent loop. Everything is drawn here; nothing comes from patient data.
 // Animations run only while a figure is on screen and the tab is visible,
 // and hold a static state for visitors who prefer reduced motion.
 (function () {
@@ -101,8 +100,9 @@
 
     items.forEach(function (el) {
       const n = Number(el.dataset.finding);
-      el.addEventListener('mouseenter', function () { hovered = n; refresh(); });
-      el.addEventListener('mouseleave', function () { hovered = null; refresh(); });
+      // Hover previews are for mice only; on a phone a tap simply pins.
+      el.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hovered = n; refresh(); } });
+      el.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hovered = null; refresh(); } });
       el.addEventListener('focus', function () { focused = n; refresh(); });
       el.addEventListener('blur', function () { focused = null; refresh(); });
       el.addEventListener('click', function () { pinned = pinned === n ? null : n; refresh(); });
@@ -119,6 +119,13 @@
     const shapes = fig.querySelectorAll('.ct-contour');
     const items = fig.querySelectorAll('.fig__item[data-organ]');
     let step = 0;
+
+    // Trace each outline by its measured length (Safari ignores pathLength on
+    // some shapes). Without a length the outline is simply drawn in full.
+    shapes.forEach(function (el) {
+      const length = typeof el.getTotalLength === 'function' ? el.getTotalLength() : 0;
+      if (length > 0) el.style.setProperty('--len', length.toFixed(1));
+    });
     let timer = 0;
 
     function render() {
@@ -380,148 +387,6 @@
     }
     function stop() { cancelAnimationFrame(raf); raf = 0; }
 
-    track(fig, start, stop);
-  })();
-
-  // ---------- 5. Event stream ----------
-  (function stream() {
-    const fig = document.getElementById('fig-stream');
-    if (!fig) return;
-    const canvas = fig.querySelector('canvas');
-    const sources = ['Skype', 'Xbox', 'Bing', 'Office'];
-    const stages = [{ x: 0.32, label: 'INGEST' }, { x: 0.57, label: 'PROCESS' }, { x: 0.8, label: 'LEARN' }];
-    const BUCKET_MS = 500;
-    const rand = seeded(42);
-    let view = null;
-    let colours = null;
-    let particles = [];
-    let bars = [];
-    let bucket = 0;
-    let bucketStart = 0;
-    let last = 0;
-    let spawnDebt = 0;
-    let raf = 0;
-
-    function build() {
-      view = sizeCanvas(canvas);
-      colours = {
-        raw: rgb(cssVar('--faint')),
-        parsed: rgb(cssVar('--accent')),
-        learned: rgb(cssVar('--accent-2')),
-        line: rgb(cssVar('--line')),
-        text: rgb(cssVar('--muted')),
-      };
-      if (!bars.length) for (let i = 0; i < 14; i++) bars.push(0.3 + rand() * 0.4);
-    }
-
-    function laneY(i) { return view.h * (0.26 + i * 0.16); }
-
-    function update(dt) {
-      const w = view.w;
-      const h = view.h;
-      spawnDebt += dt * 0.075 * w;
-      while (spawnDebt >= 1) {
-        spawnDebt -= 1;
-        const lane = Math.floor(rand() * sources.length);
-        particles.push({ x: Math.max(w * 0.13, 56), y: laneY(lane) + (rand() - 0.5) * 6, lane: lane, speed: w * (0.16 + rand() * 0.1) });
-      }
-      const band = h * 0.55;
-      particles.forEach(function (p) {
-        p.x += p.speed * dt;
-        if (p.x > w * stages[0].x) {
-          const target = band + (p.lane - 1.5) * h * 0.035;
-          p.y += (target - p.y) * Math.min(1, dt * 3);
-        }
-      });
-      const before = particles.length;
-      particles = particles.filter(function (p) { return p.x < w * stages[2].x + 4; });
-      bucket += before - particles.length;
-    }
-
-    // A still frame for reduced motion: run the stream briefly, off screen.
-    function warmUp() {
-      particles = [];
-      for (let i = 0; i < 180; i++) update(1 / 60);
-    }
-
-    function draw() {
-      const ctx = view.ctx;
-      const w = view.w;
-      const h = view.h;
-      ctx.clearRect(0, 0, w, h);
-      ctx.font = '500 10px "IBM Plex Mono", ui-monospace, monospace';
-      ctx.textBaseline = 'middle';
-
-      ctx.fillStyle = rgba(colours.text, 0.9);
-      sources.forEach(function (name, i) { ctx.fillText(name, 10, laneY(i)); });
-
-      ctx.setLineDash([3, 5]);
-      ctx.strokeStyle = rgba(colours.line, 1);
-      ctx.lineWidth = 1;
-      stages.forEach(function (s) {
-        const x = Math.round(w * s.x) + 0.5;
-        ctx.beginPath();
-        ctx.moveTo(x, 34);
-        ctx.lineTo(x, h - 18);
-        ctx.stroke();
-        ctx.fillText(s.label, x - ctx.measureText(s.label).width / 2, 20);
-      });
-      ctx.setLineDash([]);
-
-      particles.forEach(function (p) {
-        const c = p.x < w * stages[0].x ? colours.raw : p.x < w * stages[1].x ? colours.parsed : colours.learned;
-        ctx.fillStyle = rgba(c, 0.85);
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 1.7, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Live chart of events reaching the models.
-      const left = w * stages[2].x + 12;
-      const right = w - 12;
-      const top = h * 0.3;
-      const bottom = h * 0.8;
-      const bw = (right - left) / bars.length;
-      bars.forEach(function (v, i) {
-        const bh = (bottom - top) * v;
-        ctx.fillStyle = rgba(colours.learned, 0.35 + 0.5 * (i / bars.length));
-        ctx.fillRect(left + i * bw + 1, bottom - bh, Math.max(1, bw - 2), bh);
-      });
-    }
-
-    function step(now) {
-      if (!last) { last = now; bucketStart = now; }
-      const dt = Math.min(0.05, (now - last) / 1000);
-      last = now;
-      update(dt);
-      if (now - bucketStart > BUCKET_MS) {
-        const expected = 0.075 * view.w * (BUCKET_MS / 1000);
-        bars.push(Math.max(0.15, Math.min(1, (bucket / expected) * (0.55 + rand() * 0.35))));
-        bars.shift();
-        bucket = 0;
-        bucketStart = now;
-      }
-      draw();
-      raf = requestAnimationFrame(step);
-    }
-    function start() {
-      if (!view) build();
-      if (reduced()) {
-        if (!particles.length) warmUp();
-        draw();
-        return;
-      }
-      if (!raf) { last = 0; raf = requestAnimationFrame(step); }
-    }
-    function stop() { cancelAnimationFrame(raf); raf = 0; }
-
-    window.addEventListener('themechange', function () { if (view) { build(); draw(); } });
-    onWidthChange(canvas, function () {
-      if (!view) return;
-      build();
-      if (reduced()) warmUp(); else particles = [];
-      draw();
-    });
     track(fig, start, stop);
   })();
 })();

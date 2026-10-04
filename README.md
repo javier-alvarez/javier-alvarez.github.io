@@ -10,8 +10,8 @@ Plain HTML, CSS and JavaScript with no build step:
   driver, protective and passenger mutations.
 - `assets/site.js` handles the theme toggle and assembles the email link.
 - `assets/figures.js` draws the illustrative figures in the work sections
-  (chest X-ray report, CT contours, attention map, agent loop, event
-  stream), driven by the SVG and `fig__*` markup in `index.html`.
+  (chest X-ray report, CT contours, attention map, agent loop), driven by
+  the SVG and `fig__*` markup in `index.html`.
 - `assets/lib.js` holds helpers shared by `mosaic.js` and `figures.js`;
   load it before both.
 
