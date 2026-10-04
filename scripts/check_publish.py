@@ -38,7 +38,7 @@ NOREPLY_EMAIL = re.compile(r"^(\d+\+)?[A-Za-z0-9-]+@users\.noreply\.github\.com$
 
 ALLOWED_SUFFIXES = {
     ".html", ".css", ".js", ".json", ".svg", ".jpg", ".jpeg", ".png", ".webp",
-    ".ico", ".woff2", ".txt", ".md", ".py", ".yml",
+    ".ico", ".woff2", ".txt", ".md", ".py", ".yml", ".xml",
 }
 ALLOWED_NAMES = {"LICENSE", ".gitignore", ".nojekyll", "pre-push", "CNAME"}
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".tif", ".tiff", ".heic"}

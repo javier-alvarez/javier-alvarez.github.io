@@ -4,13 +4,16 @@
   - every script, stylesheet, font, icon and image the page loads is local
     and exists (no third-party requests)
   - every image has alt text
-  - the HTML nests correctly and the JSON-LD parses
+  - the HTML nests correctly and the JSON-LD parses and names a person
+  - robots.txt points to the sitemap, which lists the canonical URL, and
+    llms.txt exists
   - text colours in both themes meet WCAG AA contrast (4.5:1)
 """
 
 import json
 import re
 import sys
+import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -98,9 +101,31 @@ def main():
 
     for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S):
         try:
-            json.loads(block)
+            data = json.loads(block)
         except json.JSONDecodeError as error:
             problems.append(f"JSON-LD does not parse: {error}")
+            continue
+        person = data.get("mainEntity", data)
+        if person.get("@type") != "Person" or not person.get("name") or not person.get("sameAs"):
+            problems.append("JSON-LD does not describe a person with a name and profile links")
+
+    canonical = re.search(r'<link rel="canonical" href="([^"]+)"', html)
+    base = canonical.group(1) if canonical else ""
+    if not base:
+        problems.append("no canonical URL")
+    robots = ROOT / "robots.txt"
+    if not robots.is_file() or f"Sitemap: {base}sitemap.xml" not in robots.read_text(encoding="utf-8"):
+        problems.append("robots.txt is missing or does not point to the sitemap")
+    try:
+        ns = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
+        locs = [loc.text for loc in ET.parse(ROOT / "sitemap.xml").getroot().iter(ns + "loc")]
+        if base not in locs:
+            problems.append("sitemap.xml does not list the canonical URL")
+    except (FileNotFoundError, ET.ParseError) as error:
+        problems.append(f"sitemap.xml is missing or invalid: {error}")
+    llms = ROOT / "llms.txt"
+    if not llms.is_file() or not llms.read_text(encoding="utf-8").startswith("# "):
+        problems.append("llms.txt is missing or has no title")
 
     themes = {"light": theme_tokens(css, ':root[data-theme="light"]'),
               "dark": theme_tokens(css, ':root[data-theme="dark"]')}
