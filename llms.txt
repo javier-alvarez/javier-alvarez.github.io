@@ -1,0 +1,45 @@
+# Javier Alvarez-Valle
+
+> Director of AI at Quotient Therapeutics in Cambridge, UK. Healthcare AI leader: multimodal foundation models for radiology, radiotherapy AI used in the NHS, and AI for drug discovery. Previously Senior Director at Microsoft Research Health Futures.
+
+Javier has spent about 20 years building AI and large-scale systems, 13 of them at Microsoft. For 10 years at Microsoft Research he worked on AI for medicine: he led Project InnerEye (radiotherapy AI that cut contouring time by 36–67% in NHS use, open-sourced and adopted by 30+ organisations) and AI engineering through FDA 510(k) clearance. As Senior Director in Health Futures he led a 13-person team across the UK, US and India building multimodal foundation models (Project MAIRA), collaborating with Mayo Clinic to deploy draft reporting for chest X-rays, and with Novartis and Cyted. He has 20+ peer-reviewed papers in venues including Nature, JAMA, CVPR, ICCV, NeurIPS and EMNLP. He is also known as Javier Alvarez Valle and Javier Álvarez-Valle.
+
+## Profiles
+
+- [Website](https://javier-alvarez.github.io/): research, projects, writing and contact
+- [Google Scholar](https://scholar.google.com/citations?user=ojoRDc4AAAAJ): full publication list
+- [ORCID](https://orcid.org/0000-0003-0906-4177)
+- [LinkedIn](https://www.linkedin.com/in/javieralvarezvalle/)
+- [GitHub](https://github.com/javier-alvarez)
+
+## Career
+
+- 2026–present: Director of AI, Quotient Therapeutics (a Flagship Pioneering company using somatic genomics to discover medicines)
+- 2026: Health and life sciences AI advisor (GradientWise): autonomous chest X-ray reporting; knowledge-base layer of the open-source Firefly Agentic framework
+- 2022–2026: Senior Director, Microsoft Research Health Futures (Project MAIRA)
+- 2015–2022: Microsoft Research (Project InnerEye, FDA 510(k))
+- 2012–2015: Microsoft (Skype real-time telemetry, scaled across Xbox, Bing and Office)
+- 2007–2012: Telefónica I+D, Redgate, Citrix, Featurespace
+- Education: Computer Science, Universidad de Oviedo; MSc thesis at the University of Cambridge
+
+## Selected publications
+
+- [Closing the Performance Gap Between AI and Radiologists in Chest X-Ray Reporting](https://arxiv.org/abs/2511.21735) (arXiv 2025): MAIRA-X
+- [MAIRA-2: Grounded Radiology Report Generation](https://arxiv.org/abs/2406.04449) (arXiv 2024)
+- [Exploring scalable medical image encoders beyond text supervision](https://www.nature.com/articles/s42256-024-00965-w) (Nature Machine Intelligence 2025): RAD-DINO
+- [Making the Most of Text Semantics to Improve Biomedical Vision-Language Processing](https://arxiv.org/abs/2204.09817) (ECCV 2022): BioViL
+- [Learning to Exploit Temporal Structure for Biomedical Vision-Language Processing](https://arxiv.org/abs/2301.04558) (CVPR 2023): BioViL-T
+- [Evaluation of Deep Learning to Augment Image-Guided Radiotherapy for Head and Neck and Prostate Cancers](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2773292) (JAMA Network Open 2020)
+- [OSAIRIS: Lessons Learned From the Hospital-Based Implementation and Evaluation of an Open-Source Deep-Learning Model for Radiotherapy Image Segmentation](https://doi.org/10.1016/j.clon.2024.10.032) (Clinical Oncology 2025)
+- [Enabling large-scale screening of Barrett's esophagus using weakly supervised deep learning in histopathology](https://www.nature.com/articles/s41467-024-46174-2) (Nature Communications 2024)
+- [Active label cleaning for improved dataset quality under resource constraints](https://www.nature.com/articles/s41467-022-28818-3) (Nature Communications 2022)
+
+## Recognition
+
+- NHS AI Lab — AI in Health and Care Award (2021), Project InnerEye with Addenbrooke's Hospital
+- Invited talk "Medical Imaging AI – From raw signal to precision care", Cambridge Centre for AI in Medicine summer school (2025)
+- Microsoft Research podcast "Collaborators: Project InnerEye with Javier Alvarez and Raj Jena" (2023)
+
+## Contact
+
+- [LinkedIn](https://www.linkedin.com/in/javieralvarezvalle/) or the email link on the [website](https://javier-alvarez.github.io/#contact)
