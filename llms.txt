@@ -31,6 +31,7 @@ Javier has spent about 20 years building AI and large-scale systems, 13 of them 
 - [Learning to Exploit Temporal Structure for Biomedical Vision-Language Processing](https://arxiv.org/abs/2301.04558) (CVPR 2023): BioViL-T
 - [Evaluation of Deep Learning to Augment Image-Guided Radiotherapy for Head and Neck and Prostate Cancers](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2773292) (JAMA Network Open 2020)
 - [OSAIRIS: Lessons Learned From the Hospital-Based Implementation and Evaluation of an Open-Source Deep-Learning Model for Radiotherapy Image Segmentation](https://doi.org/10.1016/j.clon.2024.10.032) (Clinical Oncology 2025)
+- [Evaluating the robustness and readiness of large frontier models in health AI applications](https://www.nature.com/articles/s41591-026-04501-8) (Nature Medicine 2026): stress tests showing frontier models can ace medical benchmarks without robust multimodal reasoning
 - [Enabling large-scale screening of Barrett's esophagus using weakly supervised deep learning in histopathology](https://www.nature.com/articles/s41467-024-46174-2) (Nature Communications 2024)
 - [Active label cleaning for improved dataset quality under resource constraints](https://www.nature.com/articles/s41467-022-28818-3) (Nature Communications 2022)
 
